@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>
       Seva Adhikar Diyo
-      
+
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -18,4 +18,12 @@
     <strong>Ready to create an app?</strong>
     <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
   </div>
+
+  <div>
+    <ul>
+      <li *ngFor="let item of items$ | async">{{ item.name }}</li>
+    </ul>
+  </div>
 </ion-content>
+
+

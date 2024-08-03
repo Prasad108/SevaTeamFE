@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Manage Centers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12" size-md="6" offset-md="3">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ editMode ? 'Edit Center' : 'Add New Center' }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="floating">Center Name</ion-label>
+              <ion-input [(ngModel)]="newCenter.name" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Location</ion-label>
+              <ion-input [(ngModel)]="newCenter.location" required></ion-input>
+            </ion-item>
+            <ion-button expand="full" color="primary" (click)="editMode ? updateCenter() : addCenter()">
+              {{ editMode ? 'Update Center' : 'Add Center' }}
+            </ion-button>
+            <ion-button expand="full" color="light" *ngIf="editMode" (click)="cancelEdit()">
+              Cancel
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-list>
+          <ion-item-group *ngFor="let center of centers">
+            <ion-item>
+              <ion-label>
+                <h2>{{ center.name }}</h2>
+                <p>{{ center.location }}</p>
+              </ion-label>
+              <ion-button slot="end" color="primary" (click)="editCenter(center)">
+                Edit
+              </ion-button>
+              <ion-button slot="end" color="danger" (click)="deleteCenter(center.centerId!)">
+                Delete
+              </ion-button>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
