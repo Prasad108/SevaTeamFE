@@ -16,7 +16,7 @@ import { ReportsComponent } from './reports/reports.component';
     CentersComponent,
     PocsComponent,
     EventsComponent,
-    ReportsComponent,
+    ReportsComponent
   ],
   imports: [
     CommonModule,

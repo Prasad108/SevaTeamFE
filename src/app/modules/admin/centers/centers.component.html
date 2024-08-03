@@ -4,10 +4,26 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/admin">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard </span>
+  </ion-breadcrumb>
+  <ion-icon name="arrow-forward"></ion-icon>
+  <ion-breadcrumb>
+    <ion-icon name="location"></ion-icon>
+    <span>Centers</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
 <ion-content class="ion-padding">
   <ion-grid fixed>
     <ion-row>
       <ion-col size="12" size-md="6" offset-md="3">
+        <ion-button expand="full" color="secondary" routerLink="/admin">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Back to Dashboard
+        </ion-button>
         <ion-card>
           <ion-card-header>
             <ion-card-title>{{ editMode ? 'Edit Center' : 'Add New Center' }}</ion-card-title>
