@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Admin Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-md="6" size-lg="3">
+        <ion-card routerLink="/admin/centers">
+          <ion-card-header>
+            <ion-card-title>Centers</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-icon name="business" size="large"></ion-icon>
+            <h2>Manage all centers</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="6" size-lg="3">
+        <ion-card routerLink="/admin/events">
+          <ion-card-header>
+            <ion-card-title>Events</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-icon name="calendar" size="large"></ion-icon>
+            <h2>View upcoming events</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="6" size-lg="3">
+        <ion-card routerLink="/admin/pocs">
+          <ion-card-header>
+            <ion-card-title>POCs</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-icon name="people" size="large"></ion-icon>
+            <h2>Manage POCs</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="6" size-lg="3">
+        <ion-card routerLink="/admin/reports">
+          <ion-card-header>
+            <ion-card-title>Reports</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-icon name="document" size="large"></ion-icon>
+            <h2>View reports</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

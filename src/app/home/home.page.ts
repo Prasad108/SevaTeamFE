@@ -1,13 +1,27 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { Firestore, collectionData, collection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
+
+
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [CommonModule,IonicModule],
 })
 export class HomePage {
-  constructor() {}
+  items$: Observable<any[]>;
+
+  constructor(private firestore: Firestore) {
+    const itemsCollection = collection(firestore, 'centers');
+    this.items$ = collectionData(itemsCollection);
+    console.log(this.items$);
+
+
+  }
 }
