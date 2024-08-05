@@ -71,25 +71,55 @@
 
         <ion-list>
           <ion-item-group *ngFor="let event of events | sort: 'startDate'">
-            <ion-item>
+            <ion-item lines="full">
               <ion-label>
                 <h2>{{ event.name }}</h2>
-                <p>Start Date: {{ event.startDate | date }}</p>
-                <p>End Date: {{ event.endDate | date }}</p>
-                <p>Description: {{ event.description }}</p>
+                <p><strong>Start Date:</strong> {{ event.startDate | date: 'MMM d, yyyy' }}</p>
+                <p><strong>End Date:</strong> {{ event.endDate | date: 'MMM d, yyyy' }}</p>
+                <p><strong>Description:</strong> {{ event.description }}</p>
               </ion-label>
-              <ion-button slot="end" color="primary" (click)="editEvent(event)">
-                Edit
-              </ion-button>
-              <ion-button slot="end" color="danger" (click)="deleteEvent(event.eventId!)">
-                Delete
-              </ion-button>
-              <ion-button slot="end" color="tertiary" routerLink="/reports/event/{{ event.eventId }}">
-                View Volunteers
-              </ion-button>
+            </ion-item>
+            <!-- Stack buttons vertically after event details -->
+            <ion-item lines="none">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-button
+                      expand="full"
+                      fill="solid"
+                      color="primary"
+                      (click)="editEvent(event)"
+                    >
+                      Edit
+                    </ion-button>
+                  </ion-col>
+                  <ion-col>
+                    <ion-button
+                      expand="full"
+                      fill="solid"
+                      color="danger"
+                      (click)="deleteEvent(event.eventId!)"
+                    >
+                      Delete
+                    </ion-button>
+                  </ion-col>
+                  <ion-col>
+                    <ion-button
+                      expand="full"
+                      fill="solid"
+                      color="tertiary"
+                      routerLink="/reports/event/{{ event.eventId }}"
+                    >
+                      View Volunteers
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </ion-item>
           </ion-item-group>
         </ion-list>
+        
+        
       </ion-col>
     </ion-row>
   </ion-grid>
