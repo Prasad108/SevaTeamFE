@@ -1,3 +1,96 @@
-<p>
-  events works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Manage Events</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/admin">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard </span>
+  </ion-breadcrumb>
+  <ion-icon name="arrow-forward"></ion-icon>
+  <ion-breadcrumb>
+    <ion-icon name="calendar"></ion-icon>
+    <span>Events</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12" size-md="8" offset-md="2">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ editMode ? 'Edit Event' : 'Add New Event' }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <form (ngSubmit)="editMode ? updateEvent() : addEvent()">
+              <ion-item>
+                <ion-label position="floating">Event Name</ion-label>
+                <ion-input [(ngModel)]="newEvent.name" name="name" required></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Start Date</ion-label>
+                <ion-datetime
+                  presentation="date"
+                  [(ngModel)]="newEvent.startDate"
+                  name="startDate"
+                  required
+                ></ion-datetime>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">End Date</ion-label>
+                <ion-datetime
+                  presentation="date"
+                  [(ngModel)]="newEvent.endDate"
+                  name="endDate"
+                  required
+                ></ion-datetime>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Description</ion-label>
+                <ion-textarea
+                  [(ngModel)]="newEvent.description"
+                  name="description"
+                  required
+                ></ion-textarea>
+              </ion-item>
+              <ion-button expand="full" color="primary" type="submit">
+                {{ editMode ? 'Update Event' : 'Add Event' }}
+              </ion-button>
+              <ion-button expand="full" color="light" *ngIf="editMode" (click)="cancelEdit()">
+                Cancel
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-list>
+          <ion-item-group *ngFor="let event of events | sort: 'startDate'">
+            <ion-item>
+              <ion-label>
+                <h2>{{ event.name }}</h2>
+                <p>Start Date: {{ event.startDate | date }}</p>
+                <p>End Date: {{ event.endDate | date }}</p>
+                <p>Description: {{ event.description }}</p>
+              </ion-label>
+              <ion-button slot="end" color="primary" (click)="editEvent(event)">
+                Edit
+              </ion-button>
+              <ion-button slot="end" color="danger" (click)="deleteEvent(event.eventId!)">
+                Delete
+              </ion-button>
+              <ion-button slot="end" color="tertiary" routerLink="/reports/event/{{ event.eventId }}">
+                View Volunteers
+              </ion-button>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

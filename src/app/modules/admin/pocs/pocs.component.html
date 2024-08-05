@@ -1,3 +1,108 @@
-<p>
-  pocs works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Manage POCs</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/admin">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard </span>
+  </ion-breadcrumb>
+  <ion-icon name="arrow-forward"></ion-icon>
+  <ion-breadcrumb>
+    <ion-icon name="people"></ion-icon>
+    <span>POCs</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12" size-md="8" offset-md="2">
+
+        <!-- <ion-button expand="full" color="secondary" routerLink="/admin">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Back to Dashboard
+        </ion-button> -->
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ editMode ? 'Edit POC' : 'Add New POC' }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <form (ngSubmit)="editMode ? updatePoc() : addPoc()">
+              <ion-item>
+                <ion-label position="floating">POC Name</ion-label>
+                <ion-input [(ngModel)]="newPoc.name" name="name" required></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Email</ion-label>
+                <ion-input
+                  type="email"
+                  [(ngModel)]="newPoc.email"
+                  name="email"
+                  required
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Phone Number</ion-label>
+                <ion-input
+                  type="tel"
+                  [(ngModel)]="newPoc.phoneNumber"
+                  name="phoneNumber"
+                  required
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Initial Password</ion-label>
+                <ion-input
+                  type="password"
+                  [(ngModel)]="newPoc.initialPassword"
+                  name="initialPassword"
+                  required
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label>Center</ion-label>
+                <ion-select [(ngModel)]="newPoc.centerId" name="centerId" required>
+                  <ion-select-option *ngFor="let center of centers" [value]="center.centerId">
+                    {{ center.name }} - {{ center.location }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-button expand="full" color="primary" type="submit">
+                {{ editMode ? 'Update POC' : 'Add POC' }}
+              </ion-button>
+              <ion-button expand="full" color="light" *ngIf="editMode" (click)="cancelEdit()">
+                Cancel
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-list>
+          <ion-item-group *ngFor="let poc of pocs| sort: 'name'">
+            <ion-item>
+              <ion-label>
+                <h2>{{ poc.name }}</h2>
+                <p>Email: {{ poc.email }}</p>
+                <p>Phone: {{ poc.phoneNumber }}</p>
+                <p>Center: {{ getCenterName(poc.centerId) }}</p>
+              </ion-label>
+              <ion-button slot="end" color="primary" (click)="editPoc(poc)">
+                Edit
+              </ion-button>
+              <ion-button slot="end" color="danger" (click)="deletePoc(poc.pocId!)">
+                Delete
+              </ion-button>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

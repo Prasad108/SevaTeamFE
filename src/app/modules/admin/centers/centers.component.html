@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin"></ion-back-button>
+    </ion-buttons>
     <ion-title>Manage Centers</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -11,7 +14,7 @@
   </ion-breadcrumb>
   <ion-icon name="arrow-forward"></ion-icon>
   <ion-breadcrumb>
-    <ion-icon name="location"></ion-icon>
+    <ion-icon name="business"></ion-icon>
     <span>Centers</span>
   </ion-breadcrumb>
 </ion-breadcrumbs>
@@ -19,11 +22,11 @@
 <ion-content class="ion-padding">
   <ion-grid fixed>
     <ion-row>
-      <ion-col size="12" size-md="6" offset-md="3">
-        <ion-button expand="full" color="secondary" routerLink="/admin">
+      <ion-col size="12" size-md="8" offset-md="2">
+        <!-- <ion-button expand="full" color="secondary" routerLink="/admin">
           <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
           Back to Dashboard
-        </ion-button>
+        </ion-button> -->
         <ion-card>
           <ion-card-header>
             <ion-card-title>{{ editMode ? 'Edit Center' : 'Add New Center' }}</ion-card-title>
@@ -47,7 +50,7 @@
         </ion-card>
 
         <ion-list>
-          <ion-item-group *ngFor="let center of centers">
+          <ion-item-group *ngFor="let center of centers | sort: 'name'">
             <ion-item>
               <ion-label>
                 <h2>{{ center.name }}</h2>
