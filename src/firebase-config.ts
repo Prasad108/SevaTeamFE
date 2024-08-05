@@ -3,6 +3,7 @@
 // src/firebase.config.ts
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 export const firebaseConfig = {
@@ -17,5 +18,6 @@ export const firebaseConfig = {
 
 export const initializeFirebase = [
   provideFirebaseApp(() => initializeApp(firebaseConfig)),
+  provideAuth(() => getAuth()),
   provideFirestore(() => getFirestore())
 ];

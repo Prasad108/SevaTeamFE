@@ -9,6 +9,7 @@ import { PocsComponent } from './pocs/pocs.component';
 import { EventsComponent } from './events/events.component';
 import { FormsModule } from '@angular/forms';
 import { ReportsComponent } from './reports/reports.component';
+import { SortPipe } from 'src/app/pipe/sort.pipe';
 
 @NgModule({
   declarations: [
@@ -16,13 +17,14 @@ import { ReportsComponent } from './reports/reports.component';
     CentersComponent,
     PocsComponent,
     EventsComponent,
-    ReportsComponent
+    ReportsComponent,
   ],
   imports: [
     CommonModule,
     IonicModule,
     FormsModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    SortPipe,
   ]
 })
 export class AdminModule {}
