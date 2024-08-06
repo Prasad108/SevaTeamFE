@@ -1,21 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AlertController, IonModal } from '@ionic/angular';
 
 import { PocService } from '../../../services/poc.service';
 import { POC } from '../../../services/poc.service';
 import { Center, CenterService } from 'src/app/services/center.service';
+
 @Component({
   selector: 'app-pocs',
   templateUrl: './pocs.component.html',
   styleUrls: ['./pocs.component.scss'],
 })
 export class PocsComponent implements OnInit {
+  @ViewChild('pocModal', { static: true }) pocModal!: IonModal;
+
   pocs: POC[] = [];
   centers: Center[] = [];
 
   newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '' };
   editMode = false;
   selectedPocId: string | null = null;
+  isModalOpen = false;
 
   constructor(
     private pocService: PocService,
@@ -60,7 +64,7 @@ export class PocsComponent implements OnInit {
 
     this.pocService.addPoc(this.newPoc).subscribe(() => {
       this.fetchPocs();
-      this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '' };
+      this.closePocModal();
     });
   }
 
@@ -68,6 +72,7 @@ export class PocsComponent implements OnInit {
     this.editMode = true;
     this.selectedPocId = poc.pocId!;
     this.newPoc = { ...poc };
+    this.openPocModal();
   }
 
   updatePoc() {
@@ -80,7 +85,7 @@ export class PocsComponent implements OnInit {
       const updatedPoc = { ...this.newPoc, pocId: this.selectedPocId };
       this.pocService.updatePoc(updatedPoc).subscribe(() => {
         this.fetchPocs();
-        this.cancelEdit();
+        this.closePocModal();
       });
     } else {
       this.showAlert('Error', 'No POC selected for update.');
@@ -101,7 +106,7 @@ export class PocsComponent implements OnInit {
           handler: async () => {
             try {
               await this.pocService.deletePoc(pocId).toPromise();
-              await this.fetchPocs();
+              this.fetchPocs();
             } catch (error) {
               console.error('Error deleting POC:', error);
               this.showAlert('Error', 'Failed to delete POC.');
@@ -110,13 +115,32 @@ export class PocsComponent implements OnInit {
         },
       ],
     });
-  
+
     await alert.present();
   }
 
   cancelEdit() {
     this.editMode = false;
     this.selectedPocId = null;
+    this.resetNewPoc();
+    this.closePocModal();
+  }
+
+  openPocModal() {
+    this.isModalOpen = true;
+  }
+
+  closePocModal() {
+    this.isModalOpen = false;
+    this.resetNewPoc();
+  }
+
+  onModalDidDismiss() {
+    this.resetNewPoc();
+    this.editMode = false;
+  }
+
+  resetNewPoc() {
     this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '' };
   }
 
@@ -134,5 +158,4 @@ export class PocsComponent implements OnInit {
     const center = this.centers.find(c => c.centerId === centerId);
     return center ? `${center.name} - ${center.location}` : 'Unknown Center';
   }
-  
 }

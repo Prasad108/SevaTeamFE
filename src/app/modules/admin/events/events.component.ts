@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event } from '../../../services/event.service';
 import { EventService } from '../../../services/event.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonModal } from '@ionic/angular';
 
 @Component({
   selector: 'app-events',
@@ -9,10 +9,13 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./events.component.scss'],
 })
 export class EventsComponent implements OnInit {
+  @ViewChild('eventModal', { static: true }) eventModal!: IonModal;
+
   events: Event[] = [];
   newEvent!: Event;
   editMode = false;
   selectedEventId: string | null = null;
+  isModalOpen = false;
 
   constructor(
     private eventService: EventService,
@@ -32,7 +35,7 @@ export class EventsComponent implements OnInit {
       name: '',
       startDate: currentDate,
       endDate: currentDate,
-      description: ''
+      description: '',
     };
   }
 
@@ -62,14 +65,29 @@ export class EventsComponent implements OnInit {
 
     this.eventService.addEvent(this.newEvent).subscribe(() => {
       this.fetchEvents();
-      this.resetNewEvent();
+      this.closeEventModal();
     });
   }
 
+  openEventModal(event?: Event) {
+    if (event) {
+      this.editMode = true;
+      this.selectedEventId = event.eventId!;
+      this.newEvent = { ...event };
+    } else {
+      this.editMode = false;
+      this.resetNewEvent();
+    }
+    this.isModalOpen = true;
+  }
+
+  closeEventModal() {
+    this.isModalOpen = false;
+    this.resetNewEvent(); // Ensure form is reset
+  }
+
   editEvent(event: Event) {
-    this.editMode = true;
-    this.selectedEventId = event.eventId!;
-    this.newEvent = { ...event };
+    this.openEventModal(event);
   }
 
   updateEvent() {
@@ -87,7 +105,7 @@ export class EventsComponent implements OnInit {
       const updatedEvent = { ...this.newEvent, eventId: this.selectedEventId };
       this.eventService.updateEvent(updatedEvent).subscribe(() => {
         this.fetchEvents();
-        this.cancelEdit();
+        this.closeEventModal(); // Close modal after updating
       });
     } else {
       this.showAlert('Error', 'No event selected for update.');
@@ -124,7 +142,12 @@ export class EventsComponent implements OnInit {
   cancelEdit() {
     this.editMode = false;
     this.selectedEventId = null;
-    this.resetNewEvent(); // Reset the new event to default dates
+    this.closeEventModal();
+  }
+
+  onModalDidDismiss() {
+    this.resetNewEvent(); // Reset form on modal dismiss
+    this.editMode = false; // Ensure edit mode is reset
   }
 
   async showAlert(header: string, message: string) {
