@@ -30,7 +30,7 @@ jobs:
 
       # Build the Ionic app
       - name: Build Ionic app
-        run: npm run build -- --prod
+        run: npm run build
 
       # Install Firebase CLI
       - name: Install Firebase CLI
