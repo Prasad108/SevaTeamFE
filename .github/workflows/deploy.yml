@@ -24,9 +24,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Install Angular CLI
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
       # Build the Ionic app
       - name: Build Ionic app
-        run: npm run build --prod
+        run: npm run build -- --prod
 
       # Install Firebase CLI
       - name: Install Firebase CLI
