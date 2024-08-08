@@ -7,19 +7,21 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent  implements OnInit {
+export class DashboardComponent{
 
   constructor(private router: Router, private authService: AuthService) {}
-  ngOnInit() {}
-  logout() {
-    this.authService.logout().then(() => {
-      this.router.navigate(['/login']); // Navigate to the login page after logout
-    }).catch(error => {
-      console.error('Logout error:', error);
-      // Optional: Show an alert or notification to the user
-    });
+
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 
-
+  logout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/login']); // Redirect to login page after logout
+    }).catch(error => {
+      console.error('Logout error:', error);
+      // Optionally show a notification or alert here
+    });
+  }
 
 }

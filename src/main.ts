@@ -4,14 +4,15 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { IonicModule } from '@ionic/angular';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { initializeFirebase } from './firebase-config';
+import { firebaseConfig, initializeFirebase } from './firebase-config';
 import { registerIcons } from './app/icons';
 import { importProvidersFrom } from '@angular/core';
+import { AngularFireModule } from '@angular/fire/compat';
 registerIcons();
 
 bootstrapApplication(AppComponent, {
   providers: [
-    initializeFirebase,
+    ...initializeFirebase,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),

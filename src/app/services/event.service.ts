@@ -9,7 +9,22 @@ export interface Event {
   startDate: string;
   endDate: string;
   description: string;
+  volunteers?: { [volunteerId: string]: VolunteerAssignment }; 
+
 }
+
+export interface VolunteerAssignment {
+  centerId: string;
+  availability: {
+    full: boolean;
+    dateRange: [string, string];
+  };
+  adminActions: {
+    ineligible: boolean;
+    comment: string;
+  };
+}
+
 
 @Injectable({
   providedIn: 'root'
