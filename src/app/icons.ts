@@ -11,11 +11,15 @@ import {
   location, 
   arrowBackOutline,
   close,
-  business,    // Import business icon
-  calendar,    // Import calendar icon
-  people,      // Import people icon
-  document     // Import document icon
-
+  business,
+  calendar,
+  people,
+  document,
+  logOutOutline,      // Import log-out-outline icon
+  peopleOutline,      // Import people-outline icon
+  calendarOutline,    // Import calendar-outline icon
+  checkmarkDoneOutline, // Import checkmark-done-outline icon
+  addCircleOutline
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -31,7 +35,12 @@ export function registerIcons() {
     'business': business,      // Register business icon
     'calendar': calendar,      // Register calendar icon
     'people': people,          // Register people icon
-    'document': document,       // Register document icon
-    'close': close
+    'document': document,      // Register document icon
+    'close': close,
+    'log-out-outline': logOutOutline,         // Register log-out-outline icon
+    'people-outline': peopleOutline,          // Register people-outline icon
+    'calendar-outline': calendarOutline,      // Register calendar-outline icon
+    'checkmark-done-outline': checkmarkDoneOutline, // Register checkmark-done-outline icon
+    'add-circle-outline': addCircleOutline,
   });
 }

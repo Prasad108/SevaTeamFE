@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Approve Volunteers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item *ngFor="let volunteer of pendingVolunteers">
+      <ion-label>
+        <h2>{{ volunteer.name }}</h2>
+        <p>{{ volunteer.email }}</p>
+      </ion-label>
+      <ion-button color="success" (click)="approve(volunteer)">Approve</ion-button>
+      <ion-button color="danger" (click)="reject(volunteer)">Reject</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

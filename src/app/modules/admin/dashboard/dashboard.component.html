@@ -4,6 +4,13 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Admin Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <!-- Logout button -->
+      <ion-button color="danger" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Logout
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -13,7 +20,6 @@
     <span>Dashboard </span>
   </ion-breadcrumb>
   <ion-icon name="arrow-forward"></ion-icon>
-
 </ion-breadcrumbs>
 
 <ion-content class="ion-padding">

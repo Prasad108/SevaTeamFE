@@ -1,0 +1,27 @@
+// ion-header {
+//   ion-toolbar {
+//     --background: var(--ion-color-primary);
+//     --color: var(--ion-color-light);
+//   }
+// }
+
+ion-item {
+  --inner-padding-end: 0; // Aligns buttons more closely to the content
+}
+
+ion-button {
+  margin: 4px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --border-radius: 4px;
+}
+
+ion-label h2 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+ion-label p {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+}

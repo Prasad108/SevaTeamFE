@@ -13,6 +13,12 @@ export const routes: Routes = [
     title: 'Seva Adhikar Diyo - Login'
   },
   {
+    path: 'poc',
+    loadChildren: () =>
+      import('./modules/poc/poc.module').then((m) => m.PocModule),
+    title: 'Seva Adhikar Diyo - POC'
+  },
+  {
     path: 'admin',
     loadChildren: () =>
       import('./modules/admin/admin.module').then((m) => m.AdminModule),

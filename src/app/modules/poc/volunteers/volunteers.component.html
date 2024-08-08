@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Manage Volunteers</ion-title>
+    <ion-buttons slot="end">
+      <!-- Add Volunteer Button -->
+      <ion-button color="primary" (click)="openAddVolunteerModal()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- List of Volunteers -->
+  <ion-list>
+    <ion-item-group *ngFor="let volunteer of volunteers">
+      <ion-item lines="full">
+        <ion-label>
+          <h2>{{ volunteer.name }}</h2>
+          <p>Email: {{ volunteer.email }}</p>
+          <p>Phone: {{ volunteer.phoneNumber }}</p>
+          <p>Gender: {{ volunteer.gender }}</p>
+          <p>Age: {{ volunteer.age }}</p>
+          <p>Status: {{ volunteer.status }}</p>
+        </ion-label>
+        <!-- Edit and Delete Buttons -->
+        <ion-buttons slot="end" class="action-buttons">
+          <ion-button color="secondary" (click)="editVolunteer(volunteer)" fill="outline" size="small">
+            Edit
+          </ion-button>
+          <ion-button color="danger" (click)="deleteVolunteer(volunteer.volunteerId!)" fill="outline" size="small">
+            Delete
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+
+  <!-- Add/Edit Volunteer Form Modal -->
+  <ion-modal [isOpen]="showVolunteerModal" (didDismiss)="closeVolunteerModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ editMode ? 'Edit Volunteer' : 'Add Volunteer' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeVolunteerModal()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form (ngSubmit)="editMode ? updateVolunteer() : addVolunteer()">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input [(ngModel)]="newVolunteer.name" name="name" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Email</ion-label>
+            <ion-input [(ngModel)]="newVolunteer.email" name="email" type="email" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Phone Number</ion-label>
+            <ion-input [(ngModel)]="newVolunteer.phoneNumber" name="phoneNumber" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Gender</ion-label>
+            <ion-select [(ngModel)]="newVolunteer.gender" name="gender" required>
+              <ion-select-option value="male">Male</ion-select-option>
+              <ion-select-option value="female">Female</ion-select-option>
+              <ion-select-option value="other">Other</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Age</ion-label>
+            <ion-input [(ngModel)]="newVolunteer.age" name="age" type="number" min="0" required></ion-input>
+          </ion-item>
+          <ion-button expand="full" color="primary" type="submit">
+            {{ editMode ? 'Update Volunteer' : 'Add Volunteer' }}
+          </ion-button>
+          <ion-button expand="full" color="light" *ngIf="editMode" (click)="cancelEdit()">
+            Cancel
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
