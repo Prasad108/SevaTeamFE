@@ -40,7 +40,6 @@ export class VolunteersComponent implements OnInit {
     return {
       volunteerId: '',
       name: '',
-      email: '',
       phoneNumber: '',
       gender: '',
       age: 0,
@@ -117,7 +116,7 @@ export class VolunteersComponent implements OnInit {
   }
 
   validateVolunteer(volunteer: Volunteer): boolean {
-    if (!volunteer.name || !volunteer.email || !volunteer.phoneNumber || !volunteer.gender || volunteer.age <= 0) {
+    if (!volunteer.name || !volunteer.phoneNumber || !volunteer.gender || volunteer.age <= 0) {
       this.showAlert('Validation Error', 'All fields are required and age must be greater than 0.');
       return false;
     }
