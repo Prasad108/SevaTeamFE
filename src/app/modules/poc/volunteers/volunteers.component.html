@@ -10,6 +10,18 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/poc">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard</span>
+  </ion-breadcrumb>
+  <ion-icon name="arrow-forward"></ion-icon>
+  <ion-breadcrumb>
+    <ion-icon name="people"></ion-icon>
+    <span>Volunteers</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
 <ion-content class="ion-padding">
   <!-- List of Volunteers -->
   <ion-list>
@@ -17,7 +29,6 @@
       <ion-item lines="full">
         <ion-label>
           <h2>{{ volunteer.name }}</h2>
-          <p>Email: {{ volunteer.email }}</p>
           <p>Phone: {{ volunteer.phoneNumber }}</p>
           <p>Gender: {{ volunteer.gender }}</p>
           <p>Age: {{ volunteer.age }}</p>
@@ -53,10 +64,6 @@
           <ion-item>
             <ion-label position="floating">Name</ion-label>
             <ion-input [(ngModel)]="newVolunteer.name" name="name" required></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Email</ion-label>
-            <ion-input [(ngModel)]="newVolunteer.email" name="email" type="email" required></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Phone Number</ion-label>
