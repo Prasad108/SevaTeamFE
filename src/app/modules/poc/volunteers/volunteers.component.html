@@ -81,6 +81,13 @@
             <ion-label position="floating">Age</ion-label>
             <ion-input [(ngModel)]="newVolunteer.age" name="age" type="number" min="0" required></ion-input>
           </ion-item>
+          <ion-item>
+            <ion-label position="floating">Status</ion-label>
+            <ion-select [(ngModel)]="newVolunteer.status" name="status" required>
+              <ion-select-option value="pending">Pending</ion-select-option>
+              <ion-select-option value="approved">Approved</ion-select-option>
+            </ion-select>
+          </ion-item>
           <ion-button expand="full" color="primary" type="submit">
             {{ editMode ? 'Update Volunteer' : 'Add Volunteer' }}
           </ion-button>

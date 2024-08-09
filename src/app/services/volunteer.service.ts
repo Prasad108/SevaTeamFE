@@ -29,14 +29,20 @@ export class VolunteerService {
   getVolunteersByCenter(centerId: string): Observable<Volunteer[]> {
     const q = query(this.volunteersCollection, where('centerId', '==', centerId));
     return from(getDocs(q)).pipe(
-      map(snapshot => snapshot.docs.map(doc => ({
-        volunteerId: doc.id,
-        ...doc.data()
-      })))
+      map(snapshot =>
+        snapshot.docs.map(doc => {
+          const data = doc.data() as Volunteer;
+          return {
+            ...data,
+            volunteerId: doc.id  // Set the volunteerId here, after the spread
+          };
+        })
+      )
     );
   }
+  
 
-  addVolunteer(volunteer: Volunteer): Observable<void> {
+  addVolunteer(volunteer: Omit<Volunteer, 'volunteerId'>): Observable<void> {
     return from(addDoc(this.volunteersCollection, volunteer)).pipe(
       map(() => {
         console.log('Volunteer added successfully');
