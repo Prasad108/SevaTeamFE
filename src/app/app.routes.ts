@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -17,13 +19,22 @@ export const routes: Routes = [
     path: 'poc',
     loadChildren: () =>
       import('./modules/poc/poc.module').then((m) => m.PocModule),
-    title: 'Seva Adhikar Diyo - POC'
+    title: 'Seva Adhikar Diyo - POC',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'poc' }
   },
   {
     path: 'admin',
     loadChildren: () =>
       import('./modules/admin/admin.module').then((m) => m.AdminModule),
-      title: 'Seva Adhikar Diyo - Admin'
+      title: 'Seva Adhikar Diyo - Admin',
+      canActivate: [AuthGuard, RoleGuard],
+      data: { expectedRole: 'admin' }
+
+  },
+  {
+    path: 'volunteer-registration',
+    loadComponent: () => import('./modules/login/volunteer-registration/volunteer-registration.page').then( m => m.VolunteerRegistrationPage)
   },
   {
     path: '',
@@ -33,7 +44,7 @@ export const routes: Routes = [
      title: 'Seva Adhikar Diyo - Home'
   },
   {
-    path: 'volunteer-registration',
-    loadComponent: () => import('./modules/login/volunteer-registration/volunteer-registration.page').then( m => m.VolunteerRegistrationPage)
-  },
+    path: '**',
+    redirectTo: '/login'
+  }
 ];

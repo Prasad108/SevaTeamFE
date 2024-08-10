@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
@@ -16,9 +16,20 @@ export class LoginComponent {
   email = '';
   password = '';
 
-  constructor(private router: Router, private authService: AuthService, private alertController: AlertController) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService, 
+    private alertController: AlertController,
+    private loadingController: LoadingController // Inject LoadingController
+  ) {}
 
   async login() {
+    const loading = await this.loadingController.create({
+      message: 'Logging in...',
+      spinner: 'crescent',
+    });
+    await loading.present(); // Show the loading indicator
+
     try {
       // Log in using AuthService
       const poc = await this.authService.login(this.email, this.password);
@@ -36,12 +47,14 @@ export class LoginComponent {
         this.showAlert('Login Failed', 'Unable to log in user.');
       }
     } catch (error: any) {
-      // console.error('Login error:', error);
+      // Handle error cases
       if (error.message.includes('auth/invalid-credential')) {
         this.showAlert('Login Failed', 'Invalid credentials');
       } else {
         this.showAlert('Login Failed', error.message);
       }
+    } finally {
+      await loading.dismiss(); // Dismiss the loading indicator
     }
   }
 

@@ -75,7 +75,7 @@ export class AuthService {
   logout(): Promise<void> {
     this.storageService.clearStoredPocDetails(); // Clear stored POC details on logout
     return this.afAuth.signOut().then(() => {
-      console.log('User logged out successfully');
+      // console.log('User logged out successfully');
     }).catch(error => {
       console.error('Logout error:', error);
       throw error;
