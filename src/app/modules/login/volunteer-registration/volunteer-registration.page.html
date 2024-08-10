@@ -15,39 +15,104 @@
           </ion-card-header>
 
           <ion-card-content>
-            <form (ngSubmit)="registerVolunteer()">
+            <form (ngSubmit)="registerVolunteer()" #volunteerForm="ngForm">
+              
+              <!-- Name Field with Length Validation -->
               <ion-item>
                 <ion-label position="floating">Name</ion-label>
-                <ion-input [(ngModel)]="newVolunteer.name" name="name" required></ion-input>
+                <ion-input
+                  [(ngModel)]="newVolunteer.name"
+                  name="name"
+                  required
+                  minlength="3"
+                  maxlength="50"
+                  #name="ngModel"
+                ></ion-input>
               </ion-item>
+              <ion-note *ngIf="name.touched && name.invalid" color="danger">
+                <small *ngIf="name.errors?.['required']">Name is required.</small>
+                <small *ngIf="name.errors?.['minlength']">Name must be at least 3 characters long.</small>
+                <small *ngIf="name.errors?.['maxlength']">Name cannot be more than 50 characters long.</small>
+              </ion-note>
 
+              <!-- Phone Number Field with Digits Validation -->
               <ion-item>
                 <ion-label position="floating">Phone Number</ion-label>
-                <ion-input [(ngModel)]="newVolunteer.phoneNumber" name="phoneNumber" required></ion-input>
+                <ion-input
+                  [(ngModel)]="newVolunteer.phoneNumber"
+                  name="phoneNumber"
+                  required
+                  pattern="^[0-9]{10}$"
+                  type="tel"
+                  #phoneNumber="ngModel"
+                ></ion-input>
               </ion-item>
+              <ion-note *ngIf="phoneNumber.touched && phoneNumber.invalid" color="danger">
+                <small *ngIf="phoneNumber.errors?.['required']">Phone number is required.</small>
+                <small *ngIf="phoneNumber.errors?.['pattern']">Phone number must be 10 digits.</small>
+              </ion-note>
 
+              <!-- Gender Selection with Default Interface -->
               <ion-item>
                 <ion-label position="floating">Gender</ion-label>
-                <ion-select [(ngModel)]="newVolunteer.gender" name="gender" required>
+                <ion-select
+                  [(ngModel)]="newVolunteer.gender"
+                  name="gender"
+                  required
+                  #gender="ngModel"
+                >
                   <ion-select-option value="male">Male</ion-select-option>
                   <ion-select-option value="female">Female</ion-select-option>
                   <ion-select-option value="other">Other</ion-select-option>
                 </ion-select>
               </ion-item>
+              <ion-note *ngIf="gender.touched && gender.invalid" color="danger">
+                <small *ngIf="gender.errors?.['required']">Gender is required.</small>
+              </ion-note>
 
+              <!-- Age Field -->
               <ion-item>
                 <ion-label position="floating">Age</ion-label>
-                <ion-input [(ngModel)]="newVolunteer.age" name="age" type="number" min="0" required></ion-input>
+                <ion-input
+                  [(ngModel)]="newVolunteer.age"
+                  name="age"
+                  type="number"
+                  min="0"
+                  required
+                  #age="ngModel"
+                ></ion-input>
               </ion-item>
+              <ion-note *ngIf="age.touched && age.invalid" color="danger">
+                <small *ngIf="age.errors?.['required']">Age is required.</small>
+                <small *ngIf="age.errors?.['min']">Age must be a positive number.</small>
+              </ion-note>
 
+              <!-- Center Selection with Default Interface -->
               <ion-item>
                 <ion-label position="floating">Select Center</ion-label>
-                <ion-select [(ngModel)]="newVolunteer.centerId" name="centerId" required>
-                  <ion-select-option *ngFor="let center of centers" [value]="center.centerId">{{ center.name }} - {{ center.location }}</ion-select-option>
+                <ion-select
+                  [(ngModel)]="newVolunteer.centerId"
+                  name="centerId"
+                  required
+                >
+                  <ion-select-option *ngFor="let center of centers" [value]="center.centerId">
+                    {{ center.name }} - {{ center.location }}
+                  </ion-select-option>
                 </ion-select>
               </ion-item>
+              <ion-note *ngIf="volunteerForm.controls['centerId']?.touched && volunteerForm.controls['centerId']?.invalid" color="danger">
+                <small *ngIf="volunteerForm.controls['centerId']?.errors?.['required']">Center selection is required.</small>
+              </ion-note>
 
-              <ion-button expand="full" color="primary" type="submit" class="submit-button">Register</ion-button>
+              <!-- Submit Button -->
+              <ion-button
+                expand="full"
+                color="primary"
+                type="submit"
+                [disabled]="volunteerForm.invalid"
+              >
+                Register
+              </ion-button>
             </form>
           </ion-card-content>
         </ion-card>

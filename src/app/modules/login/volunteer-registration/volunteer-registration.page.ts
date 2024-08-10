@@ -1,30 +1,30 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { VolunteerService } from '../../../services/volunteer.service';
-import { Volunteer }  from '../../../services/volunteer.service';
+import { Volunteer } from '../../../services/volunteer.service';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Center, CenterService } from 'src/app/services/center.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-volunteer-registration',
   templateUrl: './volunteer-registration.page.html',
   styleUrls: ['./volunteer-registration.page.scss'],
   standalone: true,
-  imports: [IonicModule,FormsModule,CommonModule]
+  imports: [IonicModule, FormsModule, CommonModule]
 })
 export class VolunteerRegistrationPage implements OnInit {
   centers: Center[] = [];
   newVolunteer: Volunteer = this.resetVolunteer();
+  
+  @ViewChild('volunteerForm', { static: true }) volunteerForm!: NgForm; // Access the form
 
   constructor(
     private volunteerService: VolunteerService,
     @Inject(AlertController) private alertController: AlertController, // Inject AlertController directly
     private centerService: CenterService,
     private router: Router // Inject Router for navigation
-
   ) {}
 
   ngOnInit() {
@@ -59,13 +59,12 @@ export class VolunteerRegistrationPage implements OnInit {
   
     this.volunteerService.addVolunteer(this.newVolunteer).subscribe(() => {
       this.showAlert('Success', 'Your registration has been submitted. You will be notified once it is approved.', true);
-      this.newVolunteer = this.resetVolunteer(); // Reset the form
+      this.volunteerForm.resetForm(this.resetVolunteer()); // Reset the form and clear errors
     }, (error: any) => {
       console.error('Error registering volunteer:', error);
       this.showAlert('Error', 'Failed to register. Please try again.');
     });
   }
-  
 
   validateVolunteer(volunteer: Volunteer): boolean {
     if (!volunteer.name || !volunteer.phoneNumber || !volunteer.gender || volunteer.age <= 0 || !volunteer.centerId) {

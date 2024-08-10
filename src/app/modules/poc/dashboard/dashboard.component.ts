@@ -17,7 +17,7 @@ export class DashboardComponent{
 
   logout() {
     this.authService.logout().then(() => {
-      this.router.navigate(['/login']); // Redirect to login page after logout
+      this.router.navigate(['/home']); // Redirect to login page after logout
     }).catch(error => {
       console.error('Logout error:', error);
       // Optionally show a notification or alert here
