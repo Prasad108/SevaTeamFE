@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, IonModal } from '@ionic/angular';
+import { AlertController, IonModal, LoadingController } from '@ionic/angular';
 
 import { PocService, POC } from '../../../services/poc.service';
 import { Center, CenterService } from 'src/app/services/center.service';
@@ -16,7 +16,7 @@ export class PocsComponent implements OnInit {
   centers: Center[] = [];
   showPassword = false; // Track password visibility
 
-  newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role:'poc' };
+  newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role: 'poc' };
   editMode = false;
   selectedPocId: string | null = null;
   isModalOpen = false;
@@ -24,7 +24,8 @@ export class PocsComponent implements OnInit {
   constructor(
     private pocService: PocService,
     private centerService: CenterService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private loadingController: LoadingController // Add LoadingController
   ) {}
 
   ngOnInit() {
@@ -32,25 +33,39 @@ export class PocsComponent implements OnInit {
     this.fetchCenters();
   }
 
-  fetchCenters() {
+  async presentLoading(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+    });
+    await loading.present();
+    return loading;
+  }
+
+  async fetchCenters() {
+    const loading = await this.presentLoading('Loading centers...');
     this.centerService.getCenters().subscribe(
       (centers) => {
         this.centers = centers;
+        loading.dismiss(); // Dismiss loading indicator
       },
       (error) => {
         console.error('Error fetching centers:', error);
+        loading.dismiss(); // Dismiss loading indicator
         this.showAlert('Error', 'Failed to load centers.');
       }
     );
   }
 
-  fetchPocs() {
+  async fetchPocs() {
+    const loading = await this.presentLoading('Loading POCs...');
     this.pocService.getPocs().subscribe(
       (pocs: POC[]) => {
         this.pocs = pocs;
+        loading.dismiss(); // Dismiss loading indicator
       },
       (error) => {
         console.error('Error fetching POCs:', error);
+        loading.dismiss(); // Dismiss loading indicator
         this.showAlert('Error', 'Failed to load POCs.');
       }
     );
@@ -62,12 +77,15 @@ export class PocsComponent implements OnInit {
       return;
     }
 
+    const loading = await this.presentLoading('Adding POC...');
     this.pocService.addPoc(this.newPoc).subscribe(() => {
       this.fetchPocs();
       this.closePocModal();
+      loading.dismiss(); // Dismiss loading indicator
     }, error => {
       console.error('Error creating POC:', error);
-      this.showAlert('Error', 'Failed to create POC. Please try again.');
+      loading.dismiss(); // Dismiss loading indicator
+      this.showAlert('Error', 'Failed to create POC. Please try again or use different values.');
     });
   }
 
@@ -78,17 +96,23 @@ export class PocsComponent implements OnInit {
     this.openPocModal();
   }
 
-  updatePoc() {
+  async updatePoc() {
     if (!this.newPoc.name || !this.newPoc.email || !this.newPoc.phoneNumber || !this.newPoc.initialPassword || !this.newPoc.centerId) {
       this.showAlert('Validation Error', 'All fields are required.');
       return;
     }
 
     if (this.selectedPocId) {
+      const loading = await this.presentLoading('Updating POC...');
       const updatedPoc = { ...this.newPoc, pocId: this.selectedPocId };
       this.pocService.updatePoc(updatedPoc).subscribe(() => {
         this.fetchPocs();
         this.closePocModal();
+        loading.dismiss(); // Dismiss loading indicator
+      }, error => {
+        console.error('Error updating POC:', error);
+        loading.dismiss(); // Dismiss loading indicator
+        this.showAlert('Error', 'Failed to update POC. Please try again.');
       });
     } else {
       this.showAlert('Error', 'No POC selected for update.');
@@ -107,13 +131,15 @@ export class PocsComponent implements OnInit {
         {
           text: 'Delete',
           handler: async () => {
-            try {
-              await this.pocService.deletePoc(pocId).toPromise();
+            const loading = await this.presentLoading('Deleting POC...');
+            this.pocService.deletePoc(pocId).subscribe(() => {
               this.fetchPocs();
-            } catch (error) {
+              loading.dismiss(); // Dismiss loading indicator
+            }, error => {
               console.error('Error deleting POC:', error);
+              loading.dismiss(); // Dismiss loading indicator
               this.showAlert('Error', 'Failed to delete POC.');
-            }
+            });
           },
         },
       ],
@@ -144,7 +170,7 @@ export class PocsComponent implements OnInit {
   }
 
   resetNewPoc() {
-    this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role:'poc' };
+    this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role: 'poc' };
     this.showPassword = false; // Reset password visibility when closing modal
   }
 

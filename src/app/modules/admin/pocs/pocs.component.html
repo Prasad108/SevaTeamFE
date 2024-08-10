@@ -132,7 +132,10 @@
             <ion-label>Center</ion-label>
             <ion-select [(ngModel)]="newPoc.centerId" name="centerId" required>
               <ion-select-option *ngFor="let center of centers" [value]="center.centerId">
-                {{ center.name }} - {{ center.location }}
+                <div>
+                  <div>{{ center.name }}</div>
+                  <div style="font-size: smaller; color: gray;">{{ center.location }}</div>
+                </div>
               </ion-select-option>
             </ion-select>
           </ion-item>
