@@ -19,7 +19,9 @@ import {
   peopleOutline,      // Import people-outline icon
   calendarOutline,    // Import calendar-outline icon
   checkmarkDoneOutline, // Import checkmark-done-outline icon
-  addCircleOutline
+  addCircleOutline,
+  eye,
+  eyeOff,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -42,5 +44,7 @@ export function registerIcons() {
     'calendar-outline': calendarOutline,      // Register calendar-outline icon
     'checkmark-done-outline': checkmarkDoneOutline, // Register checkmark-done-outline icon
     'add-circle-outline': addCircleOutline,
+    'eye':eye,
+    'eye-off' :eyeOff
   });
 }

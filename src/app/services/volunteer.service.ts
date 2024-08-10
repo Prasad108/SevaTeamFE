@@ -8,7 +8,7 @@ export interface Volunteer {
   name: string;
   phoneNumber: string;
   gender: string;
-  pocId: string,
+  pocId?: string,
   age: number;
   status: 'pending' | 'approved' | 'rejected';
   centerId: string; // Reference to centers/{centerId}
@@ -72,22 +72,46 @@ export class VolunteerService {
     );
   }
 
-  deleteVolunteer(volunteerId: string): Observable<void> {
+  // Delete a volunteer
+  deleteVolunteer(volunteerId: string): Promise<void> {
     const docRef = doc(this.volunteersCollection, volunteerId);
-    return from(deleteDoc(docRef)).pipe(
-      map(() => {
-        console.log('Volunteer deleted successfully');
-      })
-    );
+    return deleteDoc(docRef);
   }
 
   getPendingVolunteers(): Observable<Volunteer[]> {
     const q = query(this.volunteersCollection, where('status', '==', 'pending'));
     return from(getDocs(q)).pipe(
-      map(snapshot => snapshot.docs.map(doc => ({
-        volunteerId: doc.id,
-        ...doc.data()
-      })))
+      map(snapshot =>
+        snapshot.docs.map(doc => {
+          const data = doc.data() as Volunteer;
+          return {
+            ...data,
+            volunteerId: doc.id  // Set the volunteerId here, after the spread
+          };
+        })
+      )
     );
   }
+
+    // Approve a volunteer by updating their status to 'approved'
+    approveVolunteer(volunteerId: string): Promise<void> {
+      const docRef = doc(this.volunteersCollection, volunteerId);
+      return updateDoc(docRef, { status: 'approved' });
+    }
+
+    // Fetch volunteers in 'pending' state by center ID
+    getPendingVolunteersByCenter(centerId: string): Observable<Volunteer[]> {
+      const q = query(this.volunteersCollection, where('centerId', '==', centerId), where('status', '==', 'pending'));
+      return from(getDocs(q)).pipe(
+        map(snapshot =>
+          snapshot.docs.map(doc => {
+            const data = doc.data() as Volunteer;
+            return {
+              ...data,
+              volunteerId: doc.id  // Set the volunteerId here, after the spread
+            };
+          })
+        )
+      );
+    }
 }

@@ -3,8 +3,9 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-   
+    loadComponent: () =>
+      import('./modules/home/home/home.component').then((m) => m.HomeComponent),
+    title: 'Seva Adhikar Diyo - Home'
   },
   {
     path: 'login',
@@ -30,5 +31,9 @@ export const routes: Routes = [
       import('./modules/home/home/home.component').then((m) => m.HomeComponent),
     pathMatch: 'full',
      title: 'Seva Adhikar Diyo - Home'
+  },
+  {
+    path: 'volunteer-registration',
+    loadComponent: () => import('./modules/login/volunteer-registration/volunteer-registration.page').then( m => m.VolunteerRegistrationPage)
   },
 ];

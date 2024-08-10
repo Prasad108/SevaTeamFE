@@ -4,15 +4,38 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/poc">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard</span>
+  </ion-breadcrumb>
+  <ion-icon name="arrow-forward"></ion-icon>
+  <ion-breadcrumb>
+    <ion-icon name="checkmark-done-outline"></ion-icon>
+    <span>Approve Volunteers</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item *ngFor="let volunteer of pendingVolunteers">
-      <ion-label>
-        <h2>{{ volunteer.name }}</h2>
-        <p>{{ volunteer.email }}</p>
-      </ion-label>
-      <ion-button color="success" (click)="approve(volunteer)">Approve</ion-button>
-      <ion-button color="danger" (click)="reject(volunteer)">Reject</ion-button>
-    </ion-item>
+    <ion-item-group *ngFor="let volunteer of pendingVolunteers">
+      <ion-item lines="full">
+        <ion-label>
+          <h2>{{ volunteer.name }}</h2>
+          <p>Phone: {{ volunteer.phoneNumber }}</p>
+          <p>Gender: {{ volunteer.gender }}</p>
+          <p>Age: {{ volunteer.age }}</p>
+          <p>Status: {{ volunteer.status }}</p>
+        </ion-label>
+        <ion-buttons slot="end">
+          <ion-button color="success" (click)="approveVolunteer(volunteer.volunteerId!)">
+            Approve
+          </ion-button>
+          <ion-button color="danger" (click)="deleteVolunteer(volunteer.volunteerId!)">
+            Delete
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-item-group>
   </ion-list>
 </ion-content>

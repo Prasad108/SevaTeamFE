@@ -71,11 +71,12 @@
       </ion-header>
 
       <ion-content>
-        <form (ngSubmit)="editMode ? updatePoc() : addPoc()">
+        <form (ngSubmit)="editMode ? updatePoc() : addPoc()" #pocForm="ngForm">
           <ion-item>
             <ion-label position="floating">POC Name</ion-label>
             <ion-input [(ngModel)]="newPoc.name" name="name" required></ion-input>
           </ion-item>
+
           <ion-item>
             <ion-label position="floating">Email</ion-label>
             <ion-input
@@ -83,8 +84,18 @@
               [(ngModel)]="newPoc.email"
               name="email"
               required
+              email
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+              #email="ngModel"
+              (ionBlur)="email.control.markAsTouched()"
+              autocomplete="off"
             ></ion-input>
+            <ion-item lines="none" class="error-message" *ngIf="email.invalid && email.touched">
+              <ion-text color="danger">Please enter a valid email address.</ion-text>
+            </ion-item>
           </ion-item>
+          
+          
           <ion-item>
             <ion-label position="floating">Phone Number</ion-label>
             <ion-input
@@ -92,17 +103,31 @@
               [(ngModel)]="newPoc.phoneNumber"
               name="phoneNumber"
               required
+              pattern="^[0-9]{10}$"
+              maxlength="10"
+              #phoneNumber="ngModel"
+              (ionBlur)="phoneNumber.control.markAsTouched()"
+              autocomplete="off"
             ></ion-input>
+            <ion-item lines="none" class="error-message" *ngIf="phoneNumber.invalid && phoneNumber.touched">
+              <ion-text color="danger">Please enter a valid 10-digit phone number without spaces.</ion-text>
+            </ion-item>
           </ion-item>
+
           <ion-item>
             <ion-label position="floating">Initial Password</ion-label>
             <ion-input
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               [(ngModel)]="newPoc.initialPassword"
               name="initialPassword"
+              [readonly]="editMode" 
               required
             ></ion-input>
+            <ion-button *ngIf="editMode" fill="clear" size="small" slot="end" (click)="togglePasswordVisibility()">
+              <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+            </ion-button>
           </ion-item>
+
           <ion-item>
             <ion-label>Center</ion-label>
             <ion-select [(ngModel)]="newPoc.centerId" name="centerId" required>
@@ -111,7 +136,8 @@
               </ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-button expand="full" color="primary" type="submit">
+
+          <ion-button expand="full" color="primary" type="submit" [disabled]="pocForm.invalid">
             {{ editMode ? 'Update POC' : 'Add POC' }}
           </ion-button>
           <ion-button expand="full" color="light" (click)="cancelEdit()">

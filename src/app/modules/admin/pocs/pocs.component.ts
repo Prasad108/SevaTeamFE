@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 
-import { PocService } from '../../../services/poc.service';
-import { POC } from '../../../services/poc.service';
+import { PocService, POC } from '../../../services/poc.service';
 import { Center, CenterService } from 'src/app/services/center.service';
 
 @Component({
@@ -15,8 +14,9 @@ export class PocsComponent implements OnInit {
 
   pocs: POC[] = [];
   centers: Center[] = [];
+  showPassword = false; // Track password visibility
 
-  newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '' };
+  newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role:'poc' };
   editMode = false;
   selectedPocId: string | null = null;
   isModalOpen = false;
@@ -65,6 +65,9 @@ export class PocsComponent implements OnInit {
     this.pocService.addPoc(this.newPoc).subscribe(() => {
       this.fetchPocs();
       this.closePocModal();
+    }, error => {
+      console.error('Error creating POC:', error);
+      this.showAlert('Error', 'Failed to create POC. Please try again.');
     });
   }
 
@@ -141,7 +144,12 @@ export class PocsComponent implements OnInit {
   }
 
   resetNewPoc() {
-    this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '' };
+    this.newPoc = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role:'poc' };
+    this.showPassword = false; // Reset password visibility when closing modal
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   async showAlert(header: string, message: string) {

@@ -1,0 +1,20 @@
+ion-header {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-light);
+  }
+  
+  ion-card {
+    margin-top: 20px;
+  }
+  
+  ion-card-header {
+    text-align: center;
+  }
+  
+  .submit-button {
+    margin-top: 20px;
+    --border-radius: 20px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+  }
+  

@@ -36,6 +36,11 @@ export class VolunteersComponent implements OnInit {
     });
   }
 
+  ionViewWillEnter() {
+    // Fetch fresh data every time the view is about to enter
+    this.fetchVolunteers();
+  }
+
   resetVolunteer(): Volunteer {
     return {
       volunteerId: '',
@@ -97,16 +102,20 @@ export class VolunteersComponent implements OnInit {
         {
           text: 'Delete',
           handler: () => {
-            this.volunteerService.deleteVolunteer(volunteerId).subscribe(() => {
+            this.volunteerService.deleteVolunteer(volunteerId).then(() => {
               this.fetchVolunteers();
+            }).catch(error => {
+              console.error('Error deleting volunteer:', error);
+              this.showAlert('Error', 'Failed to delete the volunteer. Please try again.');
             });
           },
         },
       ],
     });
-
+  
     await alert.present();
   }
+  
 
   cancelEdit() {
     this.editMode = false;

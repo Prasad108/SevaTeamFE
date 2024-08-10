@@ -1,9 +1,8 @@
-// src/app/services/poc.service.ts
-
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 export interface POC {
   pocId?: string; // Optional because it will be auto-generated
@@ -12,6 +11,8 @@ export interface POC {
   phoneNumber: string;
   initialPassword: string;
   centerId: string;
+  authId?: string; // Firebase Authentication UID
+  role: 'admin' | 'poc';
 }
 
 @Injectable({
@@ -20,7 +21,7 @@ export interface POC {
 export class PocService {
   private pocsCollection: CollectionReference<POC>;
 
-  constructor(private firestore: Firestore) {
+  constructor(private firestore: Firestore, private afAuth: AngularFireAuth) {
     this.pocsCollection = collection(this.firestore, 'pocs') as CollectionReference<POC>;
   }
 
@@ -36,9 +37,16 @@ export class PocService {
     );
   }
 
-  // Add a new POC
+  // Add a new POC with Firebase Authentication
   addPoc(poc: POC): Observable<void> {
-    return from(addDoc(this.pocsCollection, poc)).pipe(
+    return from(this.afAuth.createUserWithEmailAndPassword(poc.email, poc.initialPassword)).pipe(
+      switchMap(userCredential => {
+        const authId = userCredential.user?.uid;
+        const pocWithAuthId = { ...poc, authId }; // Add authId to the POC object
+        return from(addDoc(this.pocsCollection, pocWithAuthId)).pipe(
+          switchMap(docRef => from(updateDoc(docRef, { pocId: docRef.id })))
+        );
+      }),
       map(() => {
         console.log('POC added successfully');
       })
@@ -53,7 +61,15 @@ export class PocService {
 
     const pocDocRef = doc(this.pocsCollection, poc.pocId);
 
-    return from(updateDoc(pocDocRef, { name: poc.name, email: poc.email, phoneNumber: poc.phoneNumber, initialPassword: poc.initialPassword, centerId: poc.centerId })).pipe(
+    return from(updateDoc(pocDocRef, { 
+      name: poc.name, 
+      email: poc.email, 
+      phoneNumber: poc.phoneNumber, 
+      initialPassword: poc.initialPassword, 
+      centerId: poc.centerId,
+      authId: poc.authId, // Ensure authId is not lost during updates
+      role: poc.role 
+    })).pipe(
       map(() => {
         console.log('POC updated successfully');
       })

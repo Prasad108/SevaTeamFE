@@ -21,4 +21,8 @@ export class HomeComponent  implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  navigateToVolunteerRegistration() {
+    this.router.navigate(['/volunteer-registration']);
+  }
+
 }
