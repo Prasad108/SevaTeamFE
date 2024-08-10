@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Volunteer, VolunteerService } from 'src/app/services/volunteer.service';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app//services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-approve-volunteers',
@@ -15,16 +16,19 @@ export class ApproveVolunteersComponent implements OnInit {
   constructor(
     private volunteerService: VolunteerService,
     private alertController: AlertController,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService : StorageService
+
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.centerId = user.uid; // Replace with actual logic to fetch centerId
-        this.fetchPendingVolunteers();
-      }
-    });
+    const pocDetails = this.storageService.getStoredPocDetails();
+    if (pocDetails) {
+      this.centerId = pocDetails.centerId; 
+      this.fetchPendingVolunteers();
+    }else{
+      console.log('current logged in user details not found')
+    }
   }
 
   ionViewWillEnter() {

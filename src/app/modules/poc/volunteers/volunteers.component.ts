@@ -4,6 +4,7 @@ import { Volunteer } from '../../../services/volunteer.service';
 import { AlertController } from '@ionic/angular';
 import { User } from 'firebase/auth';
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-volunteers',
@@ -22,18 +23,18 @@ export class VolunteersComponent implements OnInit {
   constructor(
     private volunteerService: VolunteerService,
     private alertController: AlertController,
-    private authService: AuthService
+    private storageService : StorageService
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe((user: User | null) => {
-      if (user) {
-        // Assuming the centerId and pocId are stored in the user's claims or user profile
-        this.centerId = user.uid; // Replace with actual logic to get centerId
-        this.pocId = user.uid; // Replace with actual logic to get pocId
+    const pocDetails = this.storageService.getStoredPocDetails();
+      if (pocDetails) {
+        this.centerId = pocDetails.centerId; 
+        this.pocId = pocDetails.pocId ? pocDetails.pocId: null; 
         this.fetchVolunteers();
+      }else{
+        console.log('current logged in user details not found')
       }
-    });
   }
 
   ionViewWillEnter() {

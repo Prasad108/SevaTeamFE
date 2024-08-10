@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, where, query } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 export interface POC {
   pocId?: string; // Optional because it will be auto-generated
@@ -21,9 +22,15 @@ export interface POC {
 export class PocService {
   private pocsCollection: CollectionReference<POC>;
 
-  constructor(private firestore: Firestore, private afAuth: AngularFireAuth) {
+  constructor(private firestore: Firestore,
+    private afAuth: AngularFireAuth,
+    private storageService : StorageService
+  ) {
     this.pocsCollection = collection(this.firestore, 'pocs') as CollectionReference<POC>;
   }
+
+
+
 
   // Fetch all POCs
   getPocs(): Observable<POC[]> {
@@ -48,7 +55,7 @@ export class PocService {
         );
       }),
       map(() => {
-        console.log('POC added successfully');
+        // console.log('POC added successfully');
       })
     );
   }
@@ -71,7 +78,7 @@ export class PocService {
       role: poc.role 
     })).pipe(
       map(() => {
-        console.log('POC updated successfully');
+        // console.log('POC updated successfully');
       })
     );
   }
@@ -81,8 +88,45 @@ export class PocService {
     const pocDocRef = doc(this.pocsCollection, pocId);
     return from(deleteDoc(pocDocRef)).pipe(
       map(() => {
-        console.log('POC deleted successfully');
+        // console.log('POC deleted successfully');
       })
     );
   }
+
+   // Validate user role from POCs collection, store user details if valid, and handle invalid cases
+   validateUserRoleAndStore(uid: string): Observable<POC | null> {
+    const pocQuery = query(this.pocsCollection, where('authId', '==', uid));
+    
+    return from(getDocs(pocQuery)).pipe(
+      switchMap(snapshot => {
+        if (!snapshot.empty) {
+          const pocData = snapshot.docs[0].data() as POC;
+          const validRoles = ['admin', 'poc'];
+          if (validRoles.includes(pocData.role)) {
+            this.storageService.storePocDetails(pocData); // Store POC details
+            return from([pocData]); // Return valid POC details
+          } else {
+            return from([null]);
+          }
+        } else {
+          return from([null]);
+        }
+      })
+    );
+  }
+
+      // Get POC by authId
+  getPocByAuthId(authId: string): Observable<POC | null> {
+    const pocQuery = query(this.pocsCollection, where('authId', '==', authId));
+    
+    return from(getDocs(pocQuery)).pipe(
+      map(snapshot => {
+        if (!snapshot.empty) {
+          return snapshot.docs[0].data() as POC;
+        }
+        return null;
+      })
+    );
+  }
+  
 }

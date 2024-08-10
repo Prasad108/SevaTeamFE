@@ -10,7 +10,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule,AngularFireAuthModule]
+  imports: [IonicModule, FormsModule, AngularFireAuthModule]
 })
 export class LoginComponent {
   email = '';
@@ -21,27 +21,27 @@ export class LoginComponent {
   async login() {
     try {
       // Log in using AuthService
-      const user = await this.authService.login(this.email, this.password);
-      if (user) {
-        // console.log('User logged in:', user);
-        // console.log('User logged in uid:', user.uid);
-
-        // Fetch user role from Firestore
-        this.authService.getUserRole(user.uid).subscribe(role => {
-          if (role === 'admin') {
-            this.router.navigate(['/admin']);
-          } else if (role === 'poc') {
-            this.router.navigate(['/poc']);
-          } else {
-            this.showAlert('Access Denied', 'You do not have access to this application.');
-          }
-        });
+      const poc = await this.authService.login(this.email, this.password);
+      if (poc) {
+        if (poc.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else if (poc.role === 'poc') {
+          this.router.navigate(['/poc']);
+        } else {
+          this.authService.logout();
+          this.showAlert('Access Denied', 'You do not have access to this application.');
+        }
       } else {
+        this.authService.logout();
         this.showAlert('Login Failed', 'Unable to log in user.');
       }
     } catch (error: any) {
-      console.error('Login error:', error);
-      this.showAlert('Login Failed', error.message);
+      // console.error('Login error:', error);
+      if (error.message.includes('auth/invalid-credential')) {
+        this.showAlert('Login Failed', 'Invalid credentials');
+      } else {
+        this.showAlert('Login Failed', error.message);
+      }
     }
   }
 
