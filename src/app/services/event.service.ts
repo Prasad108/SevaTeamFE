@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, getDoc } from '@angular/fire/firestore';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -72,6 +72,19 @@ export class EventService {
     return from(deleteDoc(eventDocRef)).pipe(
       map(() => {
         console.log('Event deleted successfully');
+      })
+    );
+  }
+
+  getEventById(eventId: string): Observable<Event | null> {
+    const eventDocRef = doc(this.firestore, `events/${eventId}`);
+    return from(getDoc(eventDocRef)).pipe(
+      map((docSnap) => {
+        if (docSnap.exists()) {
+          return { eventId: docSnap.id, ...docSnap.data() } as Event;
+        } else {
+          return null;
+        }
       })
     );
   }

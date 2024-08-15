@@ -9,6 +9,7 @@ import { VolunteersComponent } from './volunteers/volunteers.component';
 import { FormsModule } from '@angular/forms';
 import { ApproveVolunteersComponent } from './approve-volunteers/approve-volunteers.component';
 import { UpdateVolunteersComponent } from './events/update-volunteers/update-volunteers.component';
+import { LoadingController } from '@ionic/angular';
 
 
 @NgModule({
@@ -24,6 +25,8 @@ import { UpdateVolunteersComponent } from './events/update-volunteers/update-vol
     PocRoutingModule,
     IonicModule,
     FormsModule,
-  ]
+  ],
+  providers: [LoadingController],
+
 })
 export class PocModule { }

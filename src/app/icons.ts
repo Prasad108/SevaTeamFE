@@ -24,6 +24,8 @@ import {
   eyeOff,
   refresh,
   removeCircle,
+  male,
+  female,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -50,5 +52,7 @@ export function registerIcons() {
     'eye-off' :eyeOff,
     'refresh': refresh,
     'remove-circle': removeCircle,
+    'male': male,
+    'female':female,
   });
 }

@@ -3,21 +3,96 @@
     <ion-title>Update Volunteer Details</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-breadcrumbs>
   <ion-breadcrumb routerLink="/poc">
     <ion-icon name="home"></ion-icon>
     <span>Dashboard</span>
   </ion-breadcrumb>
-  <ion-breadcrumb>
+  <ion-breadcrumb routerLink="/poc/events">
     <ion-icon name="calendar-outline"></ion-icon>
     <span>Manage Events</span>
   </ion-breadcrumb>
   <ion-breadcrumb>
-    <ion-icon name="calendar-outline"></ion-icon>
+    <ion-icon name="people"></ion-icon>
     <span>Volunteer Details</span>
   </ion-breadcrumb>
 </ion-breadcrumbs>
 
 <ion-content class="ion-padding">
+
+  <!-- Event Details Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ selectedEvent?.name }}</ion-card-title>
+      <ion-card-subtitle>{{ selectedEvent?.startDate | date }} - {{ selectedEvent?.endDate | date }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ selectedEvent?.description }}</p>
+      <div *ngIf="selectedEvent?.slots?.length">
+        <h4>Slots</h4>
+        <ul>
+          <li *ngFor="let slot of selectedEvent?.slots">
+            {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="!selectedEvent?.slots?.length">
+        <p>No slots available for this event.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Available Volunteers Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Available Volunteers</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="availableVolunteers.length > 0">
+        <ion-item *ngFor="let volunteer of availableVolunteers">
+          <ion-label>
+            <h2>{{ volunteer.name }}</h2>
+            <p>Phone: {{ volunteer.phoneNumber }}</p>
+            <p>Gender: {{ volunteer.gender }} </p>
+            <p>Age: {{ volunteer.age }}</p>
+          </ion-label>
+          <ion-button color="primary" (click)="addVolunteerToEvent(volunteer)">
+            Add to Event
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="availableVolunteers.length === 0">
+        <p>No volunteers available.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Assigned Volunteers Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Assigned Volunteers</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="assignedVolunteers.length > 0">
+        <ion-item *ngFor="let assignment of assignedVolunteers">
+          <ion-label>
+            <h2>{{ getVolunteerName(assignment.volunteerId) }}</h2>
+            <p>Arrival: {{ assignment.volunteerArrivalDate?.toDate() | date }}</p>
+            <p>Slots Selected: {{ assignment.slotsSelected.join(', ') }}</p>
+          </ion-label>
+          <ion-button color="tertiary" (click)="updateVolunteerAssignment(assignment)">
+            Edit
+          </ion-button>
+          <ion-button color="danger" (click)="removeVolunteerFromEvent(assignment)">
+            Remove
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="assignedVolunteers.length === 0">
+        <p>No volunteers assigned to this event.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
