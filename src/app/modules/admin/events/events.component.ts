@@ -9,10 +9,18 @@ import { AlertController, IonModal } from '@ionic/angular';
   styleUrls: ['./events.component.scss'],
 })
 export class EventsComponent implements OnInit {
+  newEvent: Event = {
+    name: '',
+    startDate: '',
+    endDate: '',
+    description: '',
+    slots: [] // Initialize slots as an empty array
+  };
   @ViewChild('eventModal', { static: true }) eventModal!: IonModal;
 
   events: Event[] = [];
-  newEvent!: Event;
+
+  newSlot: Slot = { slotId: '', startDate: '', endDate: '' };
   editMode = false;
   selectedEventId: string | null = null;
   isModalOpen = false;
@@ -35,9 +43,10 @@ export class EventsComponent implements OnInit {
       startDate: currentDate,
       endDate: currentDate,
       description: '',
-      slots: [] 
+      slots: [] // Ensure slots is always initialized as an empty array
     };
   }
+  
   
 
   fetchEvents() {
@@ -53,17 +62,18 @@ export class EventsComponent implements OnInit {
   }
 
   addSlot() {
-    if (!this.newEvent.slots) {
-      this.newEvent.slots = [];
-    }
-    const slotId = `slot${this.newEvent.slots.length + 1}`;
-    this.newEvent.slots.push({
+    if (!this.validateSlot()) return;
+
+    const slotId = `slot${this.newEvent.slots!.length + 1}`;
+    this.newEvent.slots?.push({
       slotId,
       startDate: this.newEvent.startDate,
       endDate: this.newEvent.endDate,
     });
+    
+
+    this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset slot fields
   }
-  
 
   removeSlot(index: number) {
     this.newEvent.slots?.splice(index, 1);
@@ -76,6 +86,21 @@ export class EventsComponent implements OnInit {
       this.fetchEvents();
       this.closeEventModal();
     });
+  }
+
+  validateSlot(): boolean {
+    if (new Date(this.newSlot.startDate) < new Date(this.newEvent.startDate) ||
+        new Date(this.newSlot.endDate) > new Date(this.newEvent.endDate)) {
+      this.showAlert('Validation Error', 'Slot dates must be within the event date range.');
+      return false;
+    }
+
+    if (new Date(this.newSlot.startDate) > new Date(this.newSlot.endDate)) {
+      this.showAlert('Validation Error', 'Slot start date must be before slot end date.');
+      return false;
+    }
+
+    return true;
   }
 
   validateEvent(): boolean {

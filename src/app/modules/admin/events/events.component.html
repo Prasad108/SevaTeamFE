@@ -89,21 +89,21 @@
 
   <!-- Event Modal -->
   <ion-modal
-  #eventModal
-  [isOpen]="isModalOpen"
-  backdropDismiss="false"
->
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{ editMode ? 'Edit Event' : 'Add New Event' }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeEventModal()">
-            <ion-icon name="close"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    #eventModal
+    [isOpen]="isModalOpen"
+    backdropDismiss="false"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ editMode ? 'Edit Event' : 'Add New Event' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeEventModal()">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
       <ion-content>
         <form (ngSubmit)="editMode ? updateEvent() : addEvent()">
@@ -137,33 +137,46 @@
               required
             ></ion-textarea>
           </ion-item>
-          <ion-button expand="full" color="primary" (click)="addSlot()">
+          
+          <ion-list>
+            <ion-list-header>
+              <ion-label>Slots</ion-label>
+            </ion-list-header>
+
+            <ion-item *ngFor="let slot of newEvent.slots; let i = index">
+              <ion-label>
+                <h3>Slot {{ i + 1 }}</h3>
+                <p>{{ slot.startDate }} - {{ slot.endDate }}</p>
+              </ion-label>
+              <ion-button color="danger" (click)="removeSlot(i)">
+                <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
+          
+          <ion-item>
+            <ion-label position="floating">Slot Start Date</ion-label>
+            <ion-datetime
+              presentation="date"
+              [(ngModel)]="newSlot.startDate"
+              name="slotStartDate"
+              required
+            ></ion-datetime>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Slot End Date</ion-label>
+            <ion-datetime
+              presentation="date"
+              [(ngModel)]="newSlot.endDate"
+              name="slotEndDate"
+              required
+            ></ion-datetime>
+          </ion-item>
+          <ion-button expand="block" (click)="addSlot()">
             Add Slot
           </ion-button>
-          <div *ngFor="let slot of newEvent.slots; let i = index">
-            <ion-item>
-              <ion-label position="floating">Slot {{ i + 1 }} Start Date</ion-label>
-              <ion-datetime
-                presentation="date"
-                [(ngModel)]="slot.startDate"
-                name="startDateSlot{{ i }}"
-                required
-              ></ion-datetime>
-            </ion-item>
-            <ion-item>
-              <ion-label position="floating">Slot {{ i + 1 }} End Date</ion-label>
-              <ion-datetime
-                presentation="date"
-                [(ngModel)]="slot.endDate"
-                name="endDateSlot{{ i }}"
-                required
-              ></ion-datetime>
-            </ion-item>
-            <ion-button color="danger" (click)="removeSlot(i)">
-              Remove Slot
-            </ion-button>
-          </div>
-          <ion-button expand="full" color="primary" type="submit">
+
+          <ion-button expand="full" color="primary" type="submit" [disabled]="newEvent.slots?.length === 0">
             {{ editMode ? 'Update Event' : 'Add Event' }}
           </ion-button>
           <ion-button expand="full" color="light" (click)="closeEventModal()">

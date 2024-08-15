@@ -34,6 +34,20 @@
           </ion-card-header>
           <ion-card-content>
             <p>{{ event.description }}</p>
+            
+            <!-- Display Slots if they exist -->
+            <ion-list *ngIf="event.slots && event.slots.length > 0">
+              <ion-list-header>
+                <ion-label>Event Slots</ion-label>
+              </ion-list-header>
+              <ion-item *ngFor="let slot of event.slots">
+                <ion-label>
+                  <h3>Slot {{ slot.slotId }}</h3>
+                  <p>{{ slot.startDate | date: 'mediumDate' }} - {{ slot.endDate | date: 'mediumDate' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
             <ion-item lines="none">
               <ion-button color="primary" expand="full" (click)="updateVolunteersForEvent(event)">
                 Update Volunteer Details
