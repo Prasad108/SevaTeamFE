@@ -22,6 +22,7 @@ import {
   addCircleOutline,
   eye,
   eyeOff,
+  refresh,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -45,6 +46,7 @@ export function registerIcons() {
     'checkmark-done-outline': checkmarkDoneOutline, // Register checkmark-done-outline icon
     'add-circle-outline': addCircleOutline,
     'eye':eye,
-    'eye-off' :eyeOff
+    'eye-off' :eyeOff,
+    'refresh': refresh,
   });
 }

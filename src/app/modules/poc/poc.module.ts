@@ -8,6 +8,7 @@ import { EventsComponent } from './events/events.component';
 import { VolunteersComponent } from './volunteers/volunteers.component';
 import { FormsModule } from '@angular/forms';
 import { ApproveVolunteersComponent } from './approve-volunteers/approve-volunteers.component';
+import { UpdateVolunteersComponent } from './events/update-volunteers/update-volunteers.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { ApproveVolunteersComponent } from './approve-volunteers/approve-volunte
     DashboardComponent,
     EventsComponent,
     VolunteersComponent,
-    ApproveVolunteersComponent
+    ApproveVolunteersComponent,
+    UpdateVolunteersComponent,
   ],
   imports: [
     CommonModule,

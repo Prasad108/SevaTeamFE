@@ -5,6 +5,7 @@ import { VolunteerService } from '../../../services/volunteer.service';
 import { Volunteer } from '../../../services/volunteer.service';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-events',
@@ -13,65 +14,36 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class EventsComponent implements OnInit {
   events: Event[] = [];
-  volunteers: Volunteer[] = [];
-  selectedEvent: Event | null = null;
-  centerId: string | null = null;
 
   constructor(
     private eventService: EventService,
-    private volunteerService: VolunteerService,
     private alertController: AlertController,
-    private authService: AuthService
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.centerId = user.uid; // Assuming the centerId is stored in the user's UID for simplicity
-        this.fetchEvents();
-        this.fetchVolunteers();
-      }
-    });
+    this.fetchEvents();
   }
 
   fetchEvents() {
-    this.eventService.getEvents().subscribe(events => {
-      this.events = events;
-    });
+    this.eventService.getEvents().subscribe(
+      (events) => {
+        this.events = events;
+      },
+      (error) => {
+        console.error('Error fetching events:', error);
+        this.showAlert('Error', 'Failed to load events.');
+      }
+    );
   }
 
-  fetchVolunteers() {
-    if (this.centerId) {
-      this.volunteerService.getVolunteersByCenter(this.centerId).subscribe(volunteers => {
-        this.volunteers = volunteers.filter(volunteer => volunteer.status === 'approved');
-      });
-    }
+  refreshEvents() {
+    this.fetchEvents();
   }
 
-  selectEvent(event: Event) {
-    this.selectedEvent = event;
+  updateVolunteersForEvent(event: Event) {
+    this.router.navigate(['/poc/events', event.eventId, 'volunteers']);
   }
-
-  // async assignVolunteer(volunteer: Volunteer) {
-  //   if (this.selectedEvent) {
-  //     // Ensure volunteers object exists
-  //     if (!this.selectedEvent.volunteers) {
-  //       this.selectedEvent.volunteers = {};
-  //     }
-
-  //     // Assign volunteer to event
-  //     this.selectedEvent.volunteers[volunteer.volunteerId!] = {
-  //       centerId: volunteer.centerId,
-  //       adminActions: { ineligible: false, comment: '' }
-  //     };
-
-  //     // Update the event with the new volunteer assignment
-  //     this.eventService.updateEvent(this.selectedEvent).subscribe(() => {
-  //       this.showAlert('Success', 'Volunteer assigned to event.');
-  //       this.selectedEvent = null; // Reset selection after assignment
-  //     });
-  //   }
-  // }
 
   async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({
