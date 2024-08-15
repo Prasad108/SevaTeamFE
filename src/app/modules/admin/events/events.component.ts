@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Event } from '../../../services/event.service';
+import { Event, Slot } from '../../../services/event.service';
 import { EventService } from '../../../services/event.service';
 import { AlertController, IonModal } from '@ionic/angular';
 
@@ -28,16 +28,17 @@ export class EventsComponent implements OnInit {
     this.fetchEvents();
   }
 
-  // Initialize a new event with default dates
   resetNewEvent() {
-    const currentDate = new Date().toISOString().split('T')[0]; // Format to YYYY-MM-DD
+    const currentDate = new Date().toISOString().split('T')[0];
     this.newEvent = {
       name: '',
       startDate: currentDate,
       endDate: currentDate,
       description: '',
+      slots: [] 
     };
   }
+  
 
   fetchEvents() {
     this.eventService.getEvents().subscribe(
@@ -51,22 +52,57 @@ export class EventsComponent implements OnInit {
     );
   }
 
-  async addEvent() {
-    if (!this.newEvent.name || !this.newEvent.startDate || !this.newEvent.endDate || !this.newEvent.description) {
-      await this.showAlert('Validation Error', 'All fields are required.');
-      return;
+  addSlot() {
+    if (!this.newEvent.slots) {
+      this.newEvent.slots = [];
     }
+    const slotId = `slot${this.newEvent.slots.length + 1}`;
+    this.newEvent.slots.push({
+      slotId,
+      startDate: this.newEvent.startDate,
+      endDate: this.newEvent.endDate,
+    });
+  }
+  
 
-    // Ensure start date is before end date
-    if (new Date(this.newEvent.startDate) > new Date(this.newEvent.endDate)) {
-      await this.showAlert('Validation Error', 'Start date must be before end date.');
-      return;
-    }
+  removeSlot(index: number) {
+    this.newEvent.slots?.splice(index, 1);
+  }
+
+  async addEvent() {
+    if (!this.validateEvent()) return;
 
     this.eventService.addEvent(this.newEvent).subscribe(() => {
       this.fetchEvents();
       this.closeEventModal();
     });
+  }
+
+  validateEvent(): boolean {
+    if (!this.newEvent.name || !this.newEvent.startDate || !this.newEvent.endDate || !this.newEvent.description) {
+      this.showAlert('Validation Error', 'All fields are required.');
+      return false;
+    }
+
+    if (new Date(this.newEvent.startDate) > new Date(this.newEvent.endDate)) {
+      this.showAlert('Validation Error', 'Start date must be before end date.');
+      return false;
+    }
+
+    for (const slot of this.newEvent.slots || []) {
+      if (new Date(slot.startDate) < new Date(this.newEvent.startDate) ||
+          new Date(slot.endDate) > new Date(this.newEvent.endDate)) {
+        this.showAlert('Validation Error', 'Slots must be within the event date range.');
+        return false;
+      }
+
+      if (new Date(slot.startDate) > new Date(slot.endDate)) {
+        this.showAlert('Validation Error', 'Slot start date must be before slot end date.');
+        return false;
+      }
+    }
+
+    return true;
   }
 
   openEventModal(event?: Event) {
@@ -83,7 +119,7 @@ export class EventsComponent implements OnInit {
 
   closeEventModal() {
     this.isModalOpen = false;
-    this.resetNewEvent(); // Ensure form is reset
+    this.resetNewEvent();
   }
 
   editEvent(event: Event) {
@@ -91,24 +127,14 @@ export class EventsComponent implements OnInit {
   }
 
   updateEvent() {
-    if (!this.newEvent.name || !this.newEvent.startDate || !this.newEvent.endDate || !this.newEvent.description) {
-      this.showAlert('Validation Error', 'All fields are required.');
-      return;
-    }
-
-    if (new Date(this.newEvent.startDate) > new Date(this.newEvent.endDate)) {
-      this.showAlert('Validation Error', 'Start date must be before end date.');
-      return;
-    }
+    if (!this.validateEvent()) return;
 
     if (this.selectedEventId) {
       const updatedEvent = { ...this.newEvent, eventId: this.selectedEventId };
       this.eventService.updateEvent(updatedEvent).subscribe(() => {
         this.fetchEvents();
-        this.closeEventModal(); // Close modal after updating
+        this.closeEventModal();
       });
-    } else {
-      this.showAlert('Error', 'No event selected for update.');
     }
   }
 
@@ -137,17 +163,6 @@ export class EventsComponent implements OnInit {
     });
 
     await alert.present();
-  }
-
-  cancelEdit() {
-    this.editMode = false;
-    this.selectedEventId = null;
-    this.closeEventModal();
-  }
-
-  onModalDidDismiss() {
-    this.resetNewEvent(); // Reset form on modal dismiss
-    this.editMode = false; // Ensure edit mode is reset
   }
 
   async showAlert(header: string, message: string) {

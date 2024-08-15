@@ -23,7 +23,6 @@
   <ion-grid fixed>
     <ion-row>
       <ion-col size="12" size-md="8" offset-md="2">
-        <!-- Button to open modal for adding a new event -->
         <ion-button expand="full" color="primary" (click)="openEventModal()">
           Add New Event
         </ion-button>
@@ -36,6 +35,14 @@
                 <p><strong>Start Date:</strong> {{ event.startDate | date: 'MMM d, yyyy' }}</p>
                 <p><strong>End Date:</strong> {{ event.endDate | date: 'MMM d, yyyy' }}</p>
                 <p><strong>Description:</strong> {{ event.description }}</p>
+                <div *ngIf="event.slots && event.slots.length">
+                  <p><strong>Slots:</strong></p>
+                  <ul>
+                    <li *ngFor="let slot of event.slots">
+                      {{ slot.slotId }}: {{ slot.startDate }} - {{ slot.endDate }}
+                    </li>
+                  </ul>
+                </div>
               </ion-label>
             </ion-item>
             <ion-item lines="none">
@@ -82,22 +89,21 @@
 
   <!-- Event Modal -->
   <ion-modal
-    #eventModal
-    [isOpen]="isModalOpen"
-    (didDismiss)="onModalDidDismiss()"
-    backdropDismiss="false"
-  >
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>{{ editMode ? 'Edit Event' : 'Add New Event' }}</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeEventModal()">
-              <ion-icon name="close"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+  #eventModal
+  [isOpen]="isModalOpen"
+  backdropDismiss="false"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ editMode ? 'Edit Event' : 'Add New Event' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEventModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
       <ion-content>
         <form (ngSubmit)="editMode ? updateEvent() : addEvent()">
@@ -131,12 +137,39 @@
               required
             ></ion-textarea>
           </ion-item>
+          <ion-button expand="full" color="primary" (click)="addSlot()">
+            Add Slot
+          </ion-button>
+          <div *ngFor="let slot of newEvent.slots; let i = index">
+            <ion-item>
+              <ion-label position="floating">Slot {{ i + 1 }} Start Date</ion-label>
+              <ion-datetime
+                presentation="date"
+                [(ngModel)]="slot.startDate"
+                name="startDateSlot{{ i }}"
+                required
+              ></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Slot {{ i + 1 }} End Date</ion-label>
+              <ion-datetime
+                presentation="date"
+                [(ngModel)]="slot.endDate"
+                name="endDateSlot{{ i }}"
+                required
+              ></ion-datetime>
+            </ion-item>
+            <ion-button color="danger" (click)="removeSlot(i)">
+              Remove Slot
+            </ion-button>
+          </div>
           <ion-button expand="full" color="primary" type="submit">
             {{ editMode ? 'Update Event' : 'Add Event' }}
           </ion-button>
-          <ion-button expand="full" color="light" (click)="cancelEdit()">
+          <ion-button expand="full" color="light" (click)="closeEventModal()">
             Cancel
           </ion-button>
+          
         </form>
       </ion-content>
     </ng-template>
