@@ -45,9 +45,8 @@ export class EventsComponent implements OnInit {
       description: '',
       slots: [] // Ensure slots is always initialized as an empty array
     };
+    this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset newSlot as well
   }
-  
-  
 
   fetchEvents() {
     this.eventService.getEvents().subscribe(
@@ -67,16 +66,24 @@ export class EventsComponent implements OnInit {
     const slotId = `slot${this.newEvent.slots!.length + 1}`;
     this.newEvent.slots?.push({
       slotId,
-      startDate: this.newEvent.startDate,
-      endDate: this.newEvent.endDate,
+      startDate: this.newSlot.startDate,
+      endDate: this.newSlot.endDate,
     });
-    
 
-    this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset slot fields
+    this.newSlot = { slotId: '', startDate: this.newSlot.endDate, endDate: this.newEvent.endDate }; // Reset slot fields
+    this.showAlert('Success', 'Slot added successfully!');
+
   }
 
   removeSlot(index: number) {
     this.newEvent.slots?.splice(index, 1);
+  }
+
+  onEventDateChange() {
+    if (this.newEvent.slots && this.newEvent.slots.length === 0) {
+      this.newSlot.startDate = this.newEvent.startDate;
+      this.newSlot.endDate = this.newEvent.endDate;
+    }
   }
 
   async addEvent() {
@@ -89,17 +96,26 @@ export class EventsComponent implements OnInit {
   }
 
   validateSlot(): boolean {
-    if (new Date(this.newSlot.startDate) < new Date(this.newEvent.startDate) ||
-        new Date(this.newSlot.endDate) > new Date(this.newEvent.endDate)) {
+    const slotStartDate = new Date(this.newSlot.startDate);
+    const eventStartDate = new Date(this.newEvent.startDate);
+    const slotEndDate = new Date(this.newSlot.endDate);
+    const eventEndDate = new Date(this.newEvent.endDate);
+  
+    if (isNaN(slotStartDate.getTime()) || isNaN(eventStartDate.getTime()) || isNaN(slotEndDate.getTime()) || isNaN(eventEndDate.getTime())) {
+      this.showAlert('Validation Error', 'Please select valid slot dates.');
+      return false;
+    }
+  
+    if (slotStartDate < eventStartDate || slotEndDate > eventEndDate) {
       this.showAlert('Validation Error', 'Slot dates must be within the event date range.');
       return false;
     }
-
-    if (new Date(this.newSlot.startDate) > new Date(this.newSlot.endDate)) {
+  
+    if (slotStartDate > slotEndDate) {
       this.showAlert('Validation Error', 'Slot start date must be before slot end date.');
       return false;
     }
-
+  
     return true;
   }
 
@@ -135,6 +151,8 @@ export class EventsComponent implements OnInit {
       this.editMode = true;
       this.selectedEventId = event.eventId!;
       this.newEvent = { ...event };
+      this.newSlot.startDate=this.newEvent.startDate
+      this.newSlot.endDate=this.newEvent.endDate
     } else {
       this.editMode = false;
       this.resetNewEvent();

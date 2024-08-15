@@ -23,6 +23,7 @@ import {
   eye,
   eyeOff,
   refresh,
+  removeCircle,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -48,5 +49,6 @@ export function registerIcons() {
     'eye':eye,
     'eye-off' :eyeOff,
     'refresh': refresh,
+    'remove-circle': removeCircle,
   });
 }
