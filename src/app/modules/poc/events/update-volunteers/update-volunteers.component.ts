@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { VolunteerService } from '../../../../services/volunteer.service';
 import { Volunteer } from '../../../../services/volunteer.service';
 import { EventVolunteerAssignmentService, EventVolunteerAssignment } from '../../../../services/event-volunteer-assignment.service';
-import { AlertController,LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { EventService, Event } from 'src/app/services/event.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { Timestamp } from 'firebase/firestore';
 import { ActivatedRoute } from '@angular/router';
-
 
 @Component({
   selector: 'app-update-volunteers',
@@ -23,7 +22,8 @@ export class UpdateVolunteersComponent implements OnInit {
   centerId: string | null = null;
   pocId: string | null = null;
   eventId: string | null = null;
-
+  isRegistrationFuture: boolean = false;
+  isRegistrationClosed: boolean = false;
 
   constructor(
     private volunteerService: VolunteerService,
@@ -41,19 +41,30 @@ export class UpdateVolunteersComponent implements OnInit {
     if (this.eventId) {
       this.fetchEventDetails(this.eventId);
     }
- 
   }
 
   fetchEventDetails(eventId: string) {
     this.eventService.getEventById(eventId).subscribe(
       (event) => {
         this.selectedEvent = event;
-        this.initializeData();
+        this.checkRegistrationDates();
+        if (!this.isRegistrationFuture) {
+          this.initializeData();
+        }
       },
       (error) => {
         console.error('Error fetching event details:', error);
       }
     );
+  }
+
+  checkRegistrationDates() {
+    const now = new Date().getTime();
+    const registrationStart = new Date(this.selectedEvent?.registrationStartDate || '').getTime();
+    const registrationEnd = new Date(this.selectedEvent?.registrationEndDate || '').getTime();
+
+    this.isRegistrationFuture = registrationStart > now;
+    this.isRegistrationClosed = registrationEnd < now;
   }
 
   async initializeData() {
@@ -63,7 +74,7 @@ export class UpdateVolunteersComponent implements OnInit {
       this.pocId = poc.pocId ?? null;
       this.fetchVolunteers();
       if (this.selectedEvent) {
-        this.fetchAssignedVolunteersForThisCenter(this.selectedEvent.eventId!,this.centerId);
+        this.fetchAssignedVolunteersForThisCenter(this.selectedEvent.eventId!, this.centerId);
       }
     }
   }
@@ -72,22 +83,25 @@ export class UpdateVolunteersComponent implements OnInit {
     if (this.centerId) {
       this.volunteerService.getVolunteersByCenter(this.centerId).subscribe(volunteers => {
         this.allVolunteersOfCenter = volunteers;
+        this.availableVolunteers = this.allVolunteersOfCenter.filter(volunteer => {
+          return !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
+        });
       });
     }
   }
 
   fetchAssignedVolunteersForThisCenter(eventId: string, centerId: string) {
-    this.assignmentService.getAssignmentsForEventByCenter(centerId,eventId).subscribe(assignments => {
+    this.assignmentService.getAssignmentsForEventByCenter(centerId, eventId).subscribe(assignments => {
       this.assignedVolunteers = assignments;
       this.availableVolunteers = this.allVolunteersOfCenter.filter(volunteer => {
         return !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
       });
-
-
     });
   }
 
   async addVolunteerToEvent(volunteer: Volunteer) {
+    if (this.isRegistrationClosed) return;
+
     const loading = await this.loadingController.create({ message: 'Adding Volunteer...' });
     await loading.present();
 
@@ -111,13 +125,14 @@ export class UpdateVolunteersComponent implements OnInit {
       loading.dismiss();
     }, error => {
       loading.dismiss();
-      console.log(error)
+      console.log(error);
       this.showAlert('Error', 'Failed to add volunteer to event.');
     });
   }
 
   async removeVolunteerFromEvent(assignment: EventVolunteerAssignment) {
-    console.log(assignment)
+    if (this.isRegistrationClosed) return;
+
     const loading = await this.loadingController.create({ message: 'Removing Volunteer...' });
     await loading.present();
 
@@ -161,5 +176,4 @@ export class UpdateVolunteersComponent implements OnInit {
     const volunteer = this.allVolunteersOfCenter.find(v => v.volunteerId === volunteerId);
     return volunteer ? volunteer.name : 'Unknown';
   }
-  
 }

@@ -34,6 +34,10 @@
                 <p><strong>Start Date:</strong> {{ event.startDate | date: 'MMM d, yyyy' }}</p>
                 <p><strong>End Date:</strong> {{ event.endDate | date: 'MMM d, yyyy' }}</p>
                 <p><strong>Description:</strong> {{ event.description }}</p>
+                <p><strong>Registration:</strong> {{ event.registrationStartDate | date }} - {{ event.registrationEndDate | date }}</p>
+                <p><strong>Location:</strong> {{ event.locationDetails }}</p>
+                <p><strong>Event Manager:</strong> {{ event.eventManagerName }} ({{ event.eventManagerContactNumber }})</p>
+                <p><strong>Email:</strong> {{ event.eventManagerEmailId }}</p>
                 <div *ngIf="event.slots && event.slots.length">
                   <p><strong>Slots:</strong></p>
                   <ul>
@@ -131,6 +135,40 @@
             ></ion-datetime>
           </ion-item>
           <ion-item>
+            <ion-label position="floating">Registration Start Date</ion-label>
+            <ion-datetime
+              presentation="date"
+              [(ngModel)]="newEvent.registrationStartDate"
+              name="registrationStartDate"
+              required
+            ></ion-datetime>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Registration End Date</ion-label>
+            <ion-datetime
+              presentation="date"
+              [(ngModel)]="newEvent.registrationEndDate"
+              name="registrationEndDate"
+              required
+            ></ion-datetime>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Location Details</ion-label>
+            <ion-input [(ngModel)]="newEvent.locationDetails" name="locationDetails" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Event Manager Name</ion-label>
+            <ion-input [(ngModel)]="newEvent.eventManagerName" name="eventManagerName" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Event Manager Contact Number</ion-label>
+            <ion-input [(ngModel)]="newEvent.eventManagerContactNumber" name="eventManagerContactNumber" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Event Manager Email</ion-label>
+            <ion-input [(ngModel)]="newEvent.eventManagerEmailId" name="eventManagerEmailId" type="email" required></ion-input>
+          </ion-item>
+          <ion-item>
             <ion-label position="floating">Description</ion-label>
             <ion-textarea
               [(ngModel)]="newEvent.description"
@@ -146,7 +184,7 @@
 
             <ion-item *ngFor="let slot of newEvent.slots; let i = index">
               <ion-label>
-                <h3>Slot {{ i + 1 }} {{slot | json }}</h3>
+                <h3>Slot {{ i + 1 }}</h3>
                 <p>{{ slot.startDate }} - {{ slot.endDate }}</p>
               </ion-label>
               <ion-button color="danger" (click)="removeSlot(i)">

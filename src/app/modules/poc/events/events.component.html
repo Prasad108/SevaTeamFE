@@ -33,7 +33,11 @@
             </ion-card-subtitle>
           </ion-card-header>
           <ion-card-content>
-            <p>{{ event.description }}</p>
+            <p><strong>Description:</strong> {{ event.description }}</p>
+            <p><strong>Registration Period:</strong> {{ event.registrationStartDate | date: 'mediumDate' }} - {{ event.registrationEndDate | date: 'mediumDate' }}</p>
+            <p><strong>Location:</strong> {{ event.locationDetails }}</p>
+            <p><strong>Event Manager:</strong> {{ event.eventManagerName }} ({{ event.eventManagerContactNumber }})</p>
+            <p><strong>Email:</strong> {{ event.eventManagerEmailId }}</p>
             
             <!-- Display Slots if they exist -->
             <ion-list *ngIf="event.slots && event.slots.length > 0">

@@ -14,12 +14,18 @@ export class EventsComponent implements OnInit {
     startDate: '',
     endDate: '',
     description: '',
-    slots: [] // Initialize slots as an empty array
+    slots: [],
+    registrationStartDate: '',
+    registrationEndDate: '',
+    locationDetails: '',
+    eventManagerName: '',
+    eventManagerContactNumber: '',
+    eventManagerEmailId: '',
   };
+  
   @ViewChild('eventModal', { static: true }) eventModal!: IonModal;
 
   events: Event[] = [];
-
   newSlot: Slot = { slotId: '', startDate: '', endDate: '' };
   editMode = false;
   selectedEventId: string | null = null;
@@ -43,9 +49,15 @@ export class EventsComponent implements OnInit {
       startDate: currentDate,
       endDate: currentDate,
       description: '',
-      slots: [] // Ensure slots is always initialized as an empty array
+      slots: [],
+      registrationStartDate: currentDate,
+      registrationEndDate: currentDate,
+      locationDetails: '',
+      eventManagerName: '',
+      eventManagerContactNumber: '',
+      eventManagerEmailId: '',
     };
-    this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset newSlot as well
+    this.newSlot = { slotId: '', startDate: '', endDate: '' };
   }
 
   fetchEvents() {
@@ -70,9 +82,8 @@ export class EventsComponent implements OnInit {
       endDate: this.newSlot.endDate,
     });
 
-    this.newSlot = { slotId: '', startDate: this.newSlot.endDate, endDate: this.newEvent.endDate }; // Reset slot fields
+    this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset slot fields
     this.showAlert('Success', 'Slot added successfully!');
-
   }
 
   removeSlot(index: number) {
@@ -120,13 +131,20 @@ export class EventsComponent implements OnInit {
   }
 
   validateEvent(): boolean {
-    if (!this.newEvent.name || !this.newEvent.startDate || !this.newEvent.endDate || !this.newEvent.description) {
+    if (!this.newEvent.name || !this.newEvent.startDate || !this.newEvent.endDate || !this.newEvent.description || 
+        !this.newEvent.registrationStartDate || !this.newEvent.registrationEndDate || !this.newEvent.locationDetails ||
+        !this.newEvent.eventManagerName || !this.newEvent.eventManagerContactNumber || !this.newEvent.eventManagerEmailId) {
       this.showAlert('Validation Error', 'All fields are required.');
       return false;
     }
 
     if (new Date(this.newEvent.startDate) > new Date(this.newEvent.endDate)) {
       this.showAlert('Validation Error', 'Start date must be before end date.');
+      return false;
+    }
+
+    if (new Date(this.newEvent.registrationStartDate) > new Date(this.newEvent.registrationEndDate)) {
+      this.showAlert('Validation Error', 'Registration start date must be before registration end date.');
       return false;
     }
 
@@ -151,8 +169,6 @@ export class EventsComponent implements OnInit {
       this.editMode = true;
       this.selectedEventId = event.eventId!;
       this.newEvent = { ...event };
-      this.newSlot.startDate=this.newEvent.startDate
-      this.newSlot.endDate=this.newEvent.endDate
     } else {
       this.editMode = false;
       this.resetNewEvent();

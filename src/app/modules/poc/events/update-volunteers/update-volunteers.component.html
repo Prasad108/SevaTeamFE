@@ -28,7 +28,12 @@
       <ion-card-subtitle>{{ selectedEvent?.startDate | date }} - {{ selectedEvent?.endDate | date }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <p>{{ selectedEvent?.description }}</p>
+      <p><strong>Description:</strong> {{ selectedEvent?.description }}</p>
+      <p><strong>Registration Period:</strong> {{ selectedEvent?.registrationStartDate | date: 'mediumDate' }} - {{ selectedEvent?.registrationEndDate | date: 'mediumDate' }}</p>
+      <p><strong>Location:</strong> {{ selectedEvent?.locationDetails }}</p>
+      <p><strong>Event Manager:</strong> {{ selectedEvent?.eventManagerName }} ({{ selectedEvent?.eventManagerContactNumber }})</p>
+      <p><strong>Email:</strong> {{ selectedEvent?.eventManagerEmailId }}</p>
+
       <div *ngIf="selectedEvent?.slots?.length">
         <h4>Slots</h4>
         <ul>
@@ -43,8 +48,26 @@
     </ion-card-content>
   </ion-card>
 
+<!-- Registration Start in Future -->
+<ion-card *ngIf="isRegistrationFuture">
+  <ion-card-content>
+    <p style="color: red; font-weight: bold;">Note</p>
+    <p>Volunteer registration for this event will start from {{ selectedEvent?.registrationStartDate | date: 'mediumDate' }}.</p>
+  </ion-card-content>
+</ion-card>
+
+<!-- Registration Ended in the Past -->
+<ion-card *ngIf="isRegistrationClosed">
+  <ion-card-content>
+    <p style="color: red; font-weight: bold;">Note</p>
+    <p>Volunteer registration window for this event is closed. You can still update the details of your already added volunteers, but you cannot add or remove volunteers. For any queries, please contact the event manager.</p>
+    <p><strong>Event Manager:</strong> {{ selectedEvent?.eventManagerName }} ({{ selectedEvent?.eventManagerContactNumber }})</p>
+    <p><strong>Email:</strong> {{ selectedEvent?.eventManagerEmailId }}</p>
+  </ion-card-content>
+</ion-card>
+
   <!-- Available Volunteers Section -->
-  <ion-card>
+  <ion-card *ngIf="!isRegistrationFuture">
     <ion-card-header>
       <ion-card-title>Available Volunteers</ion-card-title>
     </ion-card-header>
@@ -54,10 +77,10 @@
           <ion-label>
             <h2>{{ volunteer.name }}</h2>
             <p>Phone: {{ volunteer.phoneNumber }}</p>
-            <p>Gender: {{ volunteer.gender }} </p>
+            <p>Gender: {{ volunteer.gender }}</p>
             <p>Age: {{ volunteer.age }}</p>
           </ion-label>
-          <ion-button color="primary" (click)="addVolunteerToEvent(volunteer)">
+          <ion-button color="primary" (click)="addVolunteerToEvent(volunteer)" [disabled]="isRegistrationClosed">
             Add to Event
           </ion-button>
         </ion-item>
@@ -69,7 +92,7 @@
   </ion-card>
 
   <!-- Assigned Volunteers Section -->
-  <ion-card>
+  <ion-card *ngIf="!isRegistrationFuture">
     <ion-card-header>
       <ion-card-title>Assigned Volunteers</ion-card-title>
     </ion-card-header>
@@ -84,7 +107,7 @@
           <ion-button color="tertiary" (click)="updateVolunteerAssignment(assignment)">
             Edit
           </ion-button>
-          <ion-button color="danger" (click)="removeVolunteerFromEvent(assignment)">
+          <ion-button color="danger" (click)="removeVolunteerFromEvent(assignment)" [disabled]="isRegistrationClosed">
             Remove
           </ion-button>
         </ion-item>

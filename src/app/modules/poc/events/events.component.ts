@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '../../../services/event.service';
 import { Event } from '../../../services/event.service';
-import { VolunteerService } from '../../../services/volunteer.service';
-import { Volunteer } from '../../../services/volunteer.service';
 import { AlertController } from '@ionic/angular';
-import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
