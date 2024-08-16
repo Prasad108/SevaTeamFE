@@ -76,7 +76,7 @@ export class EventsComponent implements OnInit {
   addSlot() {
     if (!this.validateSlot()) return;
 
-    const slotId = `slot${this.newEvent.slots!.length + 1}`;
+    const slotId = `Slot-${this.newEvent.slots!.length + 1}`;
     this.newEvent.slots?.push({
       slotId,
       startDate: this.newSlot.startDate,

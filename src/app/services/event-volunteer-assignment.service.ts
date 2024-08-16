@@ -11,12 +11,12 @@ export interface EventVolunteerAssignment {
   pocId: string;
   adminApprovalStatus: 'review-pending' | 'waiting' | 'approved' | 'rejected';
   adminComment: string;
-  volunteerArrivalDate?: Timestamp | null; 
+  volunteerArrivalDate?: string | null; 
   pocComment: string;
   trainNumber?: string;
   slotsSelected: string[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: string;
+  updatedAt: string;
 }
 
 
@@ -59,7 +59,7 @@ getAssignmentsForEventByCenter(centerId: string, eventId: string): Observable<Ev
 
 // Add a new assignment
 addAssignment(assignment: EventVolunteerAssignment): Observable<EventVolunteerAssignment> {
-  const timestamp = Timestamp.now();
+  const timestamp = new Date().toISOString();
   const assignmentWithTimestamps = { ...assignment, createdAt: timestamp, updatedAt: timestamp };
   return from(addDoc(this.assignmentsCollection, assignmentWithTimestamps)).pipe(
     map(docRef => ({ id: docRef.id, ...assignmentWithTimestamps }))

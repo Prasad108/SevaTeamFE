@@ -6,7 +6,6 @@ import { AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { EventService, Event } from 'src/app/services/event.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { Timestamp } from 'firebase/firestore';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -91,7 +90,7 @@ export class UpdateVolunteersComponent implements OnInit {
       this.volunteerService.getVolunteersByCenter(this.centerId).subscribe(volunteers => {
         this.allVolunteersOfCenter = volunteers;
         this.availableVolunteers = this.allVolunteersOfCenter.filter(volunteer => {
-          return !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
+          return  volunteer.status === 'approved' && !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
         });
       });
     }
@@ -101,7 +100,7 @@ export class UpdateVolunteersComponent implements OnInit {
     this.assignmentService.getAssignmentsForEventByCenter(centerId, eventId).subscribe(assignments => {
       this.assignedVolunteers = assignments;
       this.availableVolunteers = this.allVolunteersOfCenter.filter(volunteer => {
-        return !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
+        return volunteer.status === 'approved' && !this.assignedVolunteers.some(assignedVolunteer => assignedVolunteer.volunteerId === volunteer.volunteerId);
       });
     });
   }
@@ -153,8 +152,8 @@ export class UpdateVolunteersComponent implements OnInit {
       volunteerArrivalDate: null,
       pocComment: '',
       slotsSelected: selectedSlots,
-      createdAt: Timestamp.fromDate(new Date()),
-      updatedAt: Timestamp.fromDate(new Date()),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     this.assignmentService.addAssignment(newAssignment).subscribe((createdAssignment) => {
@@ -177,7 +176,7 @@ export class UpdateVolunteersComponent implements OnInit {
     this.assignmentService.deleteAssignment(assignment.id!).subscribe(() => {
       this.assignedVolunteers = this.assignedVolunteers.filter(av => av.id !== assignment.id);
       const volunteer = this.allVolunteersOfCenter.find(v => v.volunteerId === assignment.volunteerId);
-      if (volunteer) {
+      if (volunteer && volunteer.status ==='approved') {
         this.availableVolunteers.push(volunteer);
       }
       loading.dismiss();
@@ -197,30 +196,32 @@ export class UpdateVolunteersComponent implements OnInit {
     this.currentAssignment = null;
   }
 
-  async saveUpdatedAssignment() {
-    if (!this.currentAssignment) return;
-  
-    const loading = await this.loadingController.create({ message: 'Updating Assignment...' });
-    await loading.present();
-  
-    this.currentAssignment.updatedAt = Timestamp.fromDate(new Date());
-  
-    this.assignmentService.updateAssignment(this.currentAssignment).subscribe((updatedAssignment) => {
-      loading.dismiss();
-      this.closeEditAssignmentModal();
-  
-      // Find the index of the updated assignment in the assignedVolunteers array
-      const index = this.assignedVolunteers.findIndex(a => a.id === updatedAssignment.id);
-  
-      // If the assignment is found, update it in the array
-      if (index !== -1) {
-        this.assignedVolunteers[index] = updatedAssignment;
-      }
-    }, error => {
-      loading.dismiss();
-      this.showAlert('Error', 'Failed to update volunteer assignment.');
-    });
-  }
+async saveUpdatedAssignment() {
+  if (!this.currentAssignment) return;
+
+  const loading = await this.loadingController.create({ message: 'Updating Assignment...' });
+  await loading.present();
+
+
+
+  this.currentAssignment.updatedAt = new Date().toISOString();
+
+  this.assignmentService.updateAssignment(this.currentAssignment).subscribe((updatedAssignment) => {
+    loading.dismiss();
+    this.closeEditAssignmentModal();
+
+    // Find the index of the updated assignment in the assignedVolunteers array
+    const index = this.assignedVolunteers.findIndex(a => a.id === updatedAssignment.id);
+
+    // If the assignment is found, update it in the array
+    if (index !== -1) {
+      this.assignedVolunteers[index] = updatedAssignment;
+    }
+  }, error => {
+    loading.dismiss();
+    this.showAlert('Error', 'Failed to update volunteer assignment.');
+  });
+}
 
   async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({

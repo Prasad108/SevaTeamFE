@@ -42,7 +42,7 @@
                   <p><strong>Slots:</strong></p>
                   <ul>
                     <li *ngFor="let slot of event.slots">
-                      {{ slot.slotId }}: {{ slot.startDate }} - {{ slot.endDate }}
+                      {{ slot.slotId }}: {{ slot.startDate | date:'mediumDate'}} - {{ slot.endDate | date:'mediumDate'}}
                     </li>
                   </ul>
                 </div>
@@ -187,7 +187,7 @@
             <ion-item *ngFor="let slot of newEvent.slots; let i = index">
               <ion-label>
                 <h3>Slot {{ i + 1 }}</h3>
-                <p>{{ slot.startDate }} - {{ slot.endDate }}</p>
+                <p>{{ slot.startDate | date:'mediumDate'}} - {{ slot.endDate | date:'mediumDate'}}</p>
               </ion-label>
               <ion-button color="danger" (click)="removeSlot(i)">
                 <ion-icon slot="icon-only" name="remove-circle"></ion-icon>

@@ -34,7 +34,22 @@ export class VolunteerService {
           const data = doc.data() as Volunteer;
           return {
             ...data,
-            volunteerId: doc.id  // Set the volunteerId here, after the spread
+            volunteerId: doc.id  
+          };
+        })
+      )
+    );
+  }
+
+  getVolunteersByCenterWhichAreApproved(centerId: string): Observable<Volunteer[]> {
+    const q = query(this.volunteersCollection, where('centerId', '==', centerId),where('status', '==', 'approved'));
+    return from(getDocs(q)).pipe(
+      map(snapshot =>
+        snapshot.docs.map(doc => {
+          const data = doc.data() as Volunteer;
+          return {
+            ...data,
+            volunteerId: doc.id  
           };
         })
       )
