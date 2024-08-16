@@ -9,6 +9,7 @@ import { AlertController, IonModal } from '@ionic/angular';
   styleUrls: ['./events.component.scss'],
 })
 export class EventsComponent implements OnInit {
+
   newEvent: Event = {
     name: '',
     startDate: '',
@@ -33,7 +34,7 @@ export class EventsComponent implements OnInit {
 
   constructor(
     private eventService: EventService,
-    private alertController: AlertController
+    private alertController: AlertController,
   ) {
     this.resetNewEvent();
   }
@@ -232,5 +233,15 @@ export class EventsComponent implements OnInit {
     });
 
     await alert.present();
+  }
+  getModalStyles() {
+    if (window.innerWidth >= 768) { // Desktop breakpoint
+      return {
+        '--width': '60vw',
+        '--height': '80vh'
+      };
+    } else {
+      return {}; // No additional styles for mobile
+    }
   }
 }

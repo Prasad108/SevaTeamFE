@@ -25,6 +25,13 @@ export class UpdateVolunteersComponent implements OnInit {
   isRegistrationFuture: boolean = false;
   isRegistrationClosed: boolean = false;
 
+  isSlotSelectionOpen: boolean = false;
+  slotSelection: { [slotId: string]: boolean } = {};
+  currentVolunteer: Volunteer | null = null;
+
+  isEditModalOpen: boolean = false; // Track the edit modal state
+  currentAssignment: EventVolunteerAssignment | null = null; // Current assignment being edited
+
   constructor(
     private volunteerService: VolunteerService,
     private assignmentService: EventVolunteerAssignmentService,
@@ -99,7 +106,38 @@ export class UpdateVolunteersComponent implements OnInit {
     });
   }
 
-  async addVolunteerToEvent(volunteer: Volunteer) {
+  onAddVolunteer(volunteer: Volunteer) {
+    this.currentVolunteer = volunteer;
+
+    if (this.selectedEvent?.slots && this.selectedEvent.slots.length > 1) {
+      // If there are multiple slots, open the slot selection modal
+      this.isSlotSelectionOpen = true;
+      this.slotSelection = {};
+      this.selectedEvent.slots.forEach(slot => {
+        this.slotSelection[slot.slotId] = false;
+      });
+    } else if (this.selectedEvent?.slots && this.selectedEvent.slots.length === 1) {
+      // If there is only one slot, automatically select it
+      this.addVolunteerToEvent(volunteer, [this.selectedEvent.slots[0].slotId]);
+    } else {
+      this.showAlert('Error', 'No slots available for this event.');
+    }
+  }
+
+  async confirmSlotSelection() {
+    const selectedSlots = Object.keys(this.slotSelection).filter(slotId => this.slotSelection[slotId]);
+    if (selectedSlots.length === 0) {
+      this.showAlert('Error', 'Please select at least one slot.');
+      return;
+    }
+
+    this.isSlotSelectionOpen = false;
+    if (this.currentVolunteer) {
+      this.addVolunteerToEvent(this.currentVolunteer, selectedSlots);
+    }
+  }
+
+  async addVolunteerToEvent(volunteer: Volunteer, selectedSlots: string[]) {
     if (this.isRegistrationClosed) return;
 
     const loading = await this.loadingController.create({ message: 'Adding Volunteer...' });
@@ -110,11 +148,11 @@ export class UpdateVolunteersComponent implements OnInit {
       eventId: this.selectedEvent!.eventId!,
       centerId: this.centerId!,
       pocId: this.pocId!,
-      adminApprovalStatus: 'pending',
+      adminApprovalStatus: 'review-pending',
       adminComment: '',
-      volunteerArrivalDate: Timestamp.fromDate(new Date()),
+      volunteerArrivalDate: null,
       pocComment: '',
-      slotsSelected: [],
+      slotsSelected: selectedSlots,
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
     };
@@ -149,14 +187,35 @@ export class UpdateVolunteersComponent implements OnInit {
     });
   }
 
-  async updateVolunteerAssignment(assignment: EventVolunteerAssignment) {
+  openEditAssignmentModal(assignment: EventVolunteerAssignment) {
+    this.currentAssignment = { ...assignment };
+    this.isEditModalOpen = true;
+  }
+
+  closeEditAssignmentModal() {
+    this.isEditModalOpen = false;
+    this.currentAssignment = null;
+  }
+
+  async saveUpdatedAssignment() {
+    if (!this.currentAssignment) return;
+  
     const loading = await this.loadingController.create({ message: 'Updating Assignment...' });
     await loading.present();
-
-    assignment.updatedAt = Timestamp.fromDate(new Date());
-
-    this.assignmentService.updateAssignment(assignment).subscribe(() => {
+  
+    this.currentAssignment.updatedAt = Timestamp.fromDate(new Date());
+  
+    this.assignmentService.updateAssignment(this.currentAssignment).subscribe((updatedAssignment) => {
       loading.dismiss();
+      this.closeEditAssignmentModal();
+  
+      // Find the index of the updated assignment in the assignedVolunteers array
+      const index = this.assignedVolunteers.findIndex(a => a.id === updatedAssignment.id);
+  
+      // If the assignment is found, update it in the array
+      if (index !== -1) {
+        this.assignedVolunteers[index] = updatedAssignment;
+      }
     }, error => {
       loading.dismiss();
       this.showAlert('Error', 'Failed to update volunteer assignment.');
@@ -175,5 +234,9 @@ export class UpdateVolunteersComponent implements OnInit {
   getVolunteerName(volunteerId: string): string {
     const volunteer = this.allVolunteersOfCenter.find(v => v.volunteerId === volunteerId);
     return volunteer ? volunteer.name : 'Unknown';
+  }
+
+  onSlotSelectionClose() {
+    this.isSlotSelectionOpen = false;
   }
 }

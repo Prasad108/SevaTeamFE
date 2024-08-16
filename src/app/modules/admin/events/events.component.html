@@ -95,6 +95,8 @@
     #eventModal
     [isOpen]="isModalOpen"
     backdropDismiss="false"
+    [ngStyle]="getModalStyles()"
+
   >
     <ng-template>
       <ion-header>
