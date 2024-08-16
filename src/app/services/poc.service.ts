@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, where, query } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, where, query, documentId } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -126,6 +126,13 @@ export class PocService {
         }
         return null;
       })
+    );
+  }
+
+  getPocsByIds(pocIds: string[]): Observable<POC[]> {
+    const q = query(this.pocsCollection, where(documentId(), 'in', pocIds));
+    return from(getDocs(q)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ pocId: doc.id, ...doc.data() } as POC)))
     );
   }
   

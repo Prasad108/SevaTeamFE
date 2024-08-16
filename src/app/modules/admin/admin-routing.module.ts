@@ -5,6 +5,7 @@ import { CentersComponent } from './centers/centers.component';
 import { PocsComponent } from './pocs/pocs.component';
 import { EventsComponent } from './events/events.component';
 import { ReportsComponent } from './reports/reports.component';
+import { EventDetailsComponent } from './events/event-details/event-details.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,10 @@ const routes: Routes = [
   {
     path: 'events',
     component: EventsComponent
+  },
+  { 
+    path: 'events/:eventId/details',
+    component: EventDetailsComponent 
   },
   {
     path: 'reports',

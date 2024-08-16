@@ -10,6 +10,7 @@ import { EventsComponent } from './events/events.component';
 import { FormsModule } from '@angular/forms';
 import { ReportsComponent } from './reports/reports.component';
 import { SortPipe } from 'src/app/pipe/sort.pipe';
+import { EventDetailsComponent } from './events/event-details/event-details.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { SortPipe } from 'src/app/pipe/sort.pipe';
     PocsComponent,
     EventsComponent,
     ReportsComponent,
+    EventDetailsComponent
   ],
   imports: [
     CommonModule,

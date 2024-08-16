@@ -26,6 +26,7 @@ import {
   removeCircle,
   male,
   female,
+  calendarNumberSharp,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -54,5 +55,6 @@ export function registerIcons() {
     'remove-circle': removeCircle,
     'male': male,
     'female':female,
+    'calendar-number-sharp': calendarNumberSharp,
   });
 }

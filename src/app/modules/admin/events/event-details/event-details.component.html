@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Event Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/admin">
+    <ion-icon name="home"></ion-icon>
+    <span>Dashboard</span>
+  </ion-breadcrumb>
+  <ion-breadcrumb routerLink="/admin/events">
+    <ion-icon name="calendar"></ion-icon>
+    <span>Events</span>
+  </ion-breadcrumb>
+  <ion-breadcrumb>
+    <ion-icon name="calendar-number-sharp"></ion-icon>
+    <span>Events</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ event?.name }}</ion-card-title>
+      <ion-card-subtitle>{{ event?.startDate | date }} - {{ event?.endDate | date }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Description:</strong> {{ event?.description }}</p>
+      <p><strong>Registration Period:</strong> {{ event?.registrationStartDate | date: 'mediumDate' }} - {{ event?.registrationEndDate | date: 'mediumDate' }}</p>
+      <p><strong>Location:</strong> {{ event?.locationDetails }}</p>
+      <p><strong>Event Manager:</strong> {{ event?.eventManagerName }} ({{ event?.eventManagerContactNumber }})</p>
+      <p><strong>Email:</strong> {{ event?.eventManagerEmailId }}</p>
+
+      <div *ngIf="event?.slots?.length">
+        <h4>Slots</h4>
+        <ul>
+          <li *ngFor="let slot of event?.slots">
+            {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="!event?.slots?.length">
+        <p>No slots available for this event.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Volunteers Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registered Volunteers</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="volunteers.length > 0">
+        <ion-item *ngFor="let data of volunteers">
+          <ion-label>
+            <h2>{{ data.volunteer.name }}</h2>
+            <p><strong>Phone:</strong> {{ data.volunteer.phoneNumber }}</p>
+            <p><strong>Gender:</strong> {{ data.volunteer.gender }}</p>
+            <p><strong>Age:</strong> {{ data.volunteer.age }}</p>
+            <p><strong>Center:</strong> {{ data.center.name }}</p>
+            <p><strong>POC:</strong> {{ data.poc.name }}</p>
+            <p><strong>Admin Status:</strong> {{ data.assignment.adminApprovalStatus }}</p>
+            <p><strong>Arrival Date:</strong> {{ data.assignment.volunteerArrivalDate ? (data.assignment.volunteerArrivalDate | date) : 'Not provided' }}</p>
+            <p><strong>Train Number:</strong> {{ data.assignment.trainNumber || 'Not provided' }}</p>
+            <p><strong>POC Comment:</strong> {{ data.assignment.pocComment || 'No comments' }}</p>
+            <p><strong>Slots Selected:</strong> {{ data.assignment.slotsSelected.join(', ') }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="volunteers.length === 0">
+        <p>No volunteers registered for this event.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

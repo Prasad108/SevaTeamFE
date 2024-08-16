@@ -107,9 +107,10 @@ export class UpdateVolunteersComponent implements OnInit {
 
   onAddVolunteer(volunteer: Volunteer) {
     this.currentVolunteer = volunteer;
-
+    console.log(this.selectedEvent)
     if (this.selectedEvent?.slots && this.selectedEvent.slots.length > 1) {
-      // If there are multiple slots, open the slot selection modal
+      console.log(volunteer)
+
       this.isSlotSelectionOpen = true;
       this.slotSelection = {};
       this.selectedEvent.slots.forEach(slot => {

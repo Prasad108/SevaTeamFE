@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, query, where, documentId } from '@angular/fire/firestore';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -117,6 +117,21 @@ export class VolunteerService {
     // Fetch volunteers in 'pending' state by center ID
     getPendingVolunteersByCenter(centerId: string): Observable<Volunteer[]> {
       const q = query(this.volunteersCollection, where('centerId', '==', centerId), where('status', '==', 'pending'));
+      return from(getDocs(q)).pipe(
+        map(snapshot =>
+          snapshot.docs.map(doc => {
+            const data = doc.data() as Volunteer;
+            return {
+              ...data,
+              volunteerId: doc.id  // Set the volunteerId here, after the spread
+            };
+          })
+        )
+      );
+    }
+
+    getVolunteersByIds(volunteerIds: string[]): Observable<Volunteer[]> {
+      const q = query(this.volunteersCollection, where(documentId(), 'in', volunteerIds));
       return from(getDocs(q)).pipe(
         map(snapshot =>
           snapshot.docs.map(doc => {
