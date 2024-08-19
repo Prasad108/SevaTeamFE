@@ -27,6 +27,7 @@ import {
   male,
   female,
   calendarNumberSharp,
+  documentOutline,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -56,5 +57,6 @@ export function registerIcons() {
     'male': male,
     'female':female,
     'calendar-number-sharp': calendarNumberSharp,
+    'document-outline':documentOutline
   });
 }

@@ -9,6 +9,7 @@ import { CenterService, Center } from '../../../../services/center.service';
 import { PocService, POC } from '../../../../services/poc.service';
 import { AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { EditVolunteerModalComponent } from './edit-volunteer-modal/edit-volunteer-modal.component';
+import { ExcelExportService } from 'src/app/services/excel-export.service';
 
 @Component({
   selector: 'app-event-details',
@@ -28,7 +29,8 @@ export class EventDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private modalController: ModalController,
     private alertController: AlertController,
-    private loadingController: LoadingController // Inject LoadingController
+    private loadingController: LoadingController,
+    private excelExportService: ExcelExportService,
   ) {}
 
   ngOnInit() {
@@ -60,6 +62,9 @@ export class EventDetailsComponent implements OnInit {
   async fetchVolunteerAssignments(eventId: string) {
     this.assignmentService.getAssignmentsForEvent(eventId).pipe(
       switchMap((assignments) => {
+        if (assignments.length === 0) {
+          return []; 
+        }
         const uniqueVolunteerIds = [...new Set(assignments.map(a => a.volunteerId))];
         const uniqueCenterIds = [...new Set(assignments.map(a => a.centerId))];
         const uniquePocIds = [...new Set(assignments.map(a => a.pocId))];
@@ -161,6 +166,10 @@ export class EventDetailsComponent implements OnInit {
   if (eventId) {
     await this.fetchEventDetails(eventId);
   }
+}
+
+exportToExcel() {
+  this.excelExportService.exportEventDetailsToExcel(this.event, this.volunteers);
 }
 
 }

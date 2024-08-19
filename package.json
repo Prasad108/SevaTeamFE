@@ -30,10 +30,12 @@
     "@capacitor/keyboard": "latest",
     "@capacitor/status-bar": "latest",
     "@ionic/angular": "^8.0.0",
+    "file-saver": "^2.0.5",
     "firebase": "^10.12.5",
     "ionicons": "^7.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
@@ -48,6 +50,7 @@
     "@angular/language-service": "^18.0.0",
     "@capacitor/cli": "latest",
     "@ionic/angular-toolkit": "^11.0.1",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",

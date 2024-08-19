@@ -32,7 +32,11 @@
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
-            "scripts": []
+            "scripts": [
+                          "node_modules/xlsx/dist/xlsx.full.min.js",
+                          "node_modules/file-saver/dist/FileSaver.min.js"
+                        ]
+
           },
           "configurations": {
             "production": {
