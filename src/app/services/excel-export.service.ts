@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 import { saveAs } from 'file-saver';
 import { Event, Slot } from './event.service';
 import { EventVolunteerAssignment } from './event-volunteer-assignment.service';
@@ -29,27 +29,31 @@ export class ExcelExportService {
       ['Event Manager Email', event.eventManagerEmailId]
     ];
 
-    if (event.slots && event.slots.length > 0) {
-      eventDetails.push(['Slots']);
-      event.slots.forEach(slot => {
-        eventDetails.push([`Slot ID: ${slot.slotId}`, `Start: ${slot.startDate}`, `End: ${slot.endDate}`]);
-      });
-    }
-
     const eventSheet = XLSX.utils.aoa_to_sheet(eventDetails);
 
-    // Apply some formatting to the event sheet
+    // Apply styling to the event sheet
     eventSheet['!cols'] = [{ wch: 30 }, { wch: 30 }];
+    eventDetails.forEach((row, rowIndex) => {
+      row.forEach((_, colIndex) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+        if (!eventSheet[cellAddress]) return;
+        eventSheet[cellAddress].s = {
+          font: { bold: rowIndex === 0 }, // Bold the header row
+          alignment: { vertical: 'center', horizontal: 'center' }
+        };
+      });
+    });
 
     XLSX.utils.book_append_sheet(workbook, eventSheet, 'Event Details');
 
     // Volunteers Sheet
-    const volunteerData: (string | number | null)[][] = [
+    const volunteerData: (string | number)[][] = [
       ['Sr.No', 'Volunteer Name', 'Phone Number', 'Gender', 'Age', 'Center', 'Center Location', 'POC', 'POC Phone Number', 'POC Comment', 'Admin Status', 'Admin Comment', 'Volunteer Arrival Date', 'Train Number', 'Slots Selected', 'Registered On']
     ];
+    
 
     volunteers.forEach((data, index) => {
-      const row: (string | number | null)[] = [
+      const row = [
         index + 1,
         data.volunteer.name,
         data.volunteer.phoneNumber,
@@ -72,7 +76,7 @@ export class ExcelExportService {
 
     const volunteerSheet = XLSX.utils.aoa_to_sheet(volunteerData);
 
-    // Apply some formatting to the volunteers sheet
+    // Apply styling to the volunteer sheet
     volunteerSheet['!cols'] = [
       { wch: 5 },  // Sr.No
       { wch: 20 }, // Volunteer Name
@@ -91,6 +95,23 @@ export class ExcelExportService {
       { wch: 25 }, // Slots Selected
       { wch: 20 }  // Registered On
     ];
+
+    volunteerData.forEach((row, rowIndex) => {
+      row.forEach((_, colIndex) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+        if (!volunteerSheet[cellAddress]) return;
+        volunteerSheet[cellAddress].s = {
+          font: { bold: rowIndex === 0 }, // Bold the header row
+          alignment: { vertical: 'center', horizontal: 'center' },
+          border: {
+            top: { style: 'thin', color: { rgb: '000000' } },
+            bottom: { style: 'thin', color: { rgb: '000000' } },
+            left: { style: 'thin', color: { rgb: '000000' } },
+            right: { style: 'thin', color: { rgb: '000000' } }
+          }
+        };
+      });
+    });
 
     XLSX.utils.book_append_sheet(workbook, volunteerSheet, 'Volunteers');
 
