@@ -1,58 +1,102 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Event, Slot } from './event.service';
+import { EventVolunteerAssignment } from './event-volunteer-assignment.service';
+import { Volunteer } from './volunteer.service';
+import { Center } from './center.service';
+import { POC } from './poc.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ExcelExportService {
-  constructor() {}
 
-  public exportEventDetailsToExcel(eventDetails: any, volunteers: any[]): void {
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+  exportEventDetailsToExcel(event: Event, volunteers: { assignment: EventVolunteerAssignment; volunteer: Volunteer; center: Center; poc: POC }[]): void {
+    const workbook = XLSX.utils.book_new();
 
     // Event Details Sheet
-    const eventDetailsSheet = XLSX.utils.json_to_sheet([eventDetails]);
-    XLSX.utils.book_append_sheet(workbook, eventDetailsSheet, 'Event Details');
-    
+    const eventDetails = [
+      ['Event Name', event.name],
+      ['Start Date', event.startDate],
+      ['End Date', event.endDate],
+      ['Description', event.description],
+      ['Registration Start Date', event.registrationStartDate],
+      ['Registration End Date', event.registrationEndDate],
+      ['Location', event.locationDetails],
+      ['Event Manager Name', event.eventManagerName],
+      ['Event Manager Contact Number', event.eventManagerContactNumber],
+      ['Event Manager Email', event.eventManagerEmailId]
+    ];
+
+    if (event.slots && event.slots.length > 0) {
+      eventDetails.push(['Slots']);
+      event.slots.forEach(slot => {
+        eventDetails.push([`Slot ID: ${slot.slotId}`, `Start: ${slot.startDate}`, `End: ${slot.endDate}`]);
+      });
+    }
+
+    const eventSheet = XLSX.utils.aoa_to_sheet(eventDetails);
+
+    // Apply some formatting to the event sheet
+    eventSheet['!cols'] = [{ wch: 30 }, { wch: 30 }];
+
+    XLSX.utils.book_append_sheet(workbook, eventSheet, 'Event Details');
 
     // Volunteers Sheet
-    const volunteerData = volunteers.map((v) => ({
-      'Volunteer Name': v.volunteer.name,
-      'Phone Number': v.volunteer.phoneNumber,
-      'Gender': v.volunteer.gender,
-      'Age': v.volunteer.age,
-      'Center Name': v.center.name,
-      'POC Name': v.poc.name,
-      'Admin Status': v.assignment.adminApprovalStatus,
-      'Admin Comment': v.assignment.adminComment || 'No comments',
-      'Arrival Date': v.assignment.volunteerArrivalDate
-        ? new Date(v.assignment.volunteerArrivalDate).toLocaleDateString()
-        : 'Not provided',
-      'Train Number': v.assignment.trainNumber || 'Not provided',
-      'POC Comment': v.assignment.pocComment || 'No comments',
-      'Slots Selected': v.assignment.slotsSelected.join(', '),
-    }));
+    const volunteerData: (string | number | null)[][] = [
+      ['Sr.No', 'Volunteer Name', 'Phone Number', 'Gender', 'Age', 'Center', 'Center Location', 'POC', 'POC Phone Number', 'POC Comment', 'Admin Status', 'Admin Comment', 'Volunteer Arrival Date', 'Train Number', 'Slots Selected', 'Registered On']
+    ];
 
-    const volunteersSheet = XLSX.utils.json_to_sheet(volunteerData);
-    XLSX.utils.book_append_sheet(workbook, volunteersSheet, 'Volunteers');
-
-    // Generate Excel File
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
+    volunteers.forEach((data, index) => {
+      const row: (string | number | null)[] = [
+        index + 1,
+        data.volunteer.name,
+        data.volunteer.phoneNumber,
+        data.volunteer.gender,
+        data.volunteer.age,
+        data.center.name,
+        data.center.location,
+        data.poc.name,
+        data.poc.phoneNumber,
+        data.assignment.pocComment || 'NA',
+        data.assignment.adminApprovalStatus,
+        data.assignment.adminComment || 'NA',
+        data.assignment.volunteerArrivalDate || 'NA',
+        data.assignment.trainNumber || 'NA',
+        data.assignment.slotsSelected.join(', '),
+        data.assignment.createdAt
+      ];
+      volunteerData.push(row);
     });
 
-    // Save Excel File
-    this.saveAsExcelFile(excelBuffer, `Event_Details_${eventDetails.name}`);
-  }
+    const volunteerSheet = XLSX.utils.aoa_to_sheet(volunteerData);
 
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: EXCEL_TYPE,
-    });
-    saveAs(data, `${fileName}_${new Date().getTime()}.xlsx`);
+    // Apply some formatting to the volunteers sheet
+    volunteerSheet['!cols'] = [
+      { wch: 5 },  // Sr.No
+      { wch: 20 }, // Volunteer Name
+      { wch: 15 }, // Phone Number
+      { wch: 10 }, // Gender
+      { wch: 5 },  // Age
+      { wch: 20 }, // Center
+      { wch: 30 }, // Center Location
+      { wch: 20 }, // POC Name
+      { wch: 15 }, // POC Phone Number
+      { wch: 30 }, // POC Comment
+      { wch: 15 }, // Admin Status
+      { wch: 30 }, // Admin Comment
+      { wch: 20 }, // Volunteer Arrival Date
+      { wch: 20 }, // Train Number
+      { wch: 25 }, // Slots Selected
+      { wch: 20 }  // Registered On
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, volunteerSheet, 'Volunteers');
+
+    // Generate Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, `${event.name}_Event_Details.xlsx`);
   }
 }
-
-const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

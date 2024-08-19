@@ -169,7 +169,11 @@ export class EventDetailsComponent implements OnInit {
 }
 
 exportToExcel() {
-  this.excelExportService.exportEventDetailsToExcel(this.event, this.volunteers);
+  if (this.event && this.volunteers.length > 0) {
+    this.excelExportService.exportEventDetailsToExcel(this.event, this.volunteers);
+  } else {
+    this.showAlert('Export Error', 'There is no data available to export.');
+  }
 }
 
 }
