@@ -1,17 +1,21 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Event Details</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="refreshPage()">
-        <ion-icon slot="icon-only" name="refresh"></ion-icon>
-      </ion-button>
-      <ion-button (click)="exportToExcel()">
-        <ion-icon slot="start" name="document-outline"></ion-icon>
-        Export to Excel
-      </ion-button>
-    </ion-buttons>
+    <div class="header-content">
+      <ion-title class="responsive-title">Event Details</ion-title>
+      <div class="buttons-wrapper">
+        <ion-button (click)="refreshPage()">
+          <ion-icon slot="icon-only" name="refresh"></ion-icon>
+        </ion-button>
+        <ion-button (click)="exportToExcel()">
+          <ion-icon slot="start" name="document-outline"></ion-icon>
+          Export to Excel
+        </ion-button>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
+
+
 
 
 <ion-breadcrumbs>

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import { CenterService } from '../../../services/center.service';
 import { Center } from '../../../services/center.service';
+import { ConfirmationDialogService } from '../../../services/confirmation-dialog.service'; // Import the service
 
 @Component({
   selector: 'app-centers',
@@ -19,7 +20,8 @@ export class CentersComponent implements OnInit {
 
   constructor(
     private centerService: CenterService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private confirmationDialogService: ConfirmationDialogService // Inject the service
   ) {}
 
   ngOnInit() {
@@ -75,30 +77,16 @@ export class CentersComponent implements OnInit {
   }
 
   async deleteCenter(centerId: string) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Delete',
-      message: 'Are you sure you want to delete this center?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          handler: async () => {
-            try {
-              await this.centerService.deleteCenter(centerId);
-              this.centers = this.centers.filter((center) => center.centerId !== centerId);
-            } catch (error) {
-              console.error('Error deleting center:', error);
-              this.showAlert('Error', 'Failed to delete center.');
-            }
-          },
-        },
-      ],
-    });
-
-    await alert.present();
+    const confirmed = await this.confirmationDialogService.confirmDelete(); // Use the service
+    if (confirmed) {
+      try {
+        await this.centerService.deleteCenter(centerId);
+        this.centers = this.centers.filter((center) => center.centerId !== centerId);
+      } catch (error) {
+        console.error('Error deleting center:', error);
+        this.showAlert('Error', 'Failed to delete center.');
+      }
+    }
   }
 
   cancelEdit() {

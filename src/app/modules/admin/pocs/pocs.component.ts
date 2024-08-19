@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal, LoadingController } from '@ionic/angular';
-
 import { PocService, POC } from '../../../services/poc.service';
 import { Center, CenterService } from 'src/app/services/center.service';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-pocs',
@@ -25,7 +25,8 @@ export class PocsComponent implements OnInit {
     private pocService: PocService,
     private centerService: CenterService,
     private alertController: AlertController,
-    private loadingController: LoadingController // Add LoadingController
+    private loadingController: LoadingController,
+    private confirmationDialogService: ConfirmationDialogService // Inject the service
   ) {}
 
   ngOnInit() {
@@ -120,32 +121,19 @@ export class PocsComponent implements OnInit {
   }
 
   async deletePoc(pocId: string) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Delete',
-      message: 'Are you sure you want to delete this POC?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          handler: async () => {
-            const loading = await this.presentLoading('Deleting POC...');
-            this.pocService.deletePoc(pocId).subscribe(() => {
-              this.fetchPocs();
-              loading.dismiss(); // Dismiss loading indicator
-            }, error => {
-              console.error('Error deleting POC:', error);
-              loading.dismiss(); // Dismiss loading indicator
-              this.showAlert('Error', 'Failed to delete POC.');
-            });
-          },
-        },
-      ],
-    });
+    const confirmed = await this.confirmationDialogService.confirmDelete();
 
-    await alert.present();
+    if (confirmed) {
+      const loading = await this.presentLoading('Deleting POC...');
+      this.pocService.deletePoc(pocId).subscribe(() => {
+        this.fetchPocs();
+        loading.dismiss(); // Dismiss loading indicator
+      }, error => {
+        console.error('Error deleting POC:', error);
+        loading.dismiss(); // Dismiss loading indicator
+        this.showAlert('Error', 'Failed to delete POC.');
+      });
+    }
   }
 
   cancelEdit() {

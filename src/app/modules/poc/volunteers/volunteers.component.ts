@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 import { User } from 'firebase/auth';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-volunteers',
@@ -23,7 +24,9 @@ export class VolunteersComponent implements OnInit {
   constructor(
     private volunteerService: VolunteerService,
     private alertController: AlertController,
-    private storageService : StorageService
+    private storageService : StorageService,
+    private confirmationDialogService: ConfirmationDialogService 
+
   ) {}
 
   ngOnInit() {
@@ -92,30 +95,23 @@ export class VolunteersComponent implements OnInit {
   }
 
   async deleteVolunteer(volunteerId: string) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Delete',
-      message: 'Are you sure you want to delete this volunteer?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          handler: () => {
-            this.volunteerService.deleteVolunteer(volunteerId).then(() => {
-              this.fetchVolunteers();
-            }).catch(error => {
-              console.error('Error deleting volunteer:', error);
-              this.showAlert('Error', 'Failed to delete the volunteer. Please try again.');
-            });
-          },
-        },
-      ],
-    });
-  
-    await alert.present();
+    const confirmed = await this.confirmationDialogService.confirmDelete(
+      'Are you sure you want to delete this volunteer?', // Custom message
+      'Type "delete" to confirm' // Custom placeholder
+    );
+
+    if (confirmed) {
+      this.volunteerService.deleteVolunteer(volunteerId)
+        .then(() => {
+          this.fetchVolunteers(); // Refresh the list of volunteers
+        })
+        .catch(error => {
+          console.error('Error deleting volunteer:', error);
+          this.showAlert('Error', 'Failed to delete the volunteer. Please try again.');
+        });
+    }
   }
+
   
 
   cancelEdit() {

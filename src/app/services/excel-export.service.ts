@@ -29,17 +29,32 @@ export class ExcelExportService {
       ['Event Manager Email', event.eventManagerEmailId]
     ];
 
+    // Add Slots to Event Details
+    if (event.slots && event.slots.length > 0) {
+      eventDetails.push(['Slots']);
+      eventDetails.push(['Slot Id', 'Start Date', 'End Date']); // Add headers for slot details
+      event.slots.forEach(slot => {
+        eventDetails.push([slot.slotId, slot.startDate, slot.endDate]);
+      });
+    }
+
     const eventSheet = XLSX.utils.aoa_to_sheet(eventDetails);
 
     // Apply styling to the event sheet
-    eventSheet['!cols'] = [{ wch: 30 }, { wch: 30 }];
+    eventSheet['!cols'] = [{ wch: 30 }, { wch: 30 }, { wch: 30 }];
     eventDetails.forEach((row, rowIndex) => {
       row.forEach((_, colIndex) => {
         const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
         if (!eventSheet[cellAddress]) return;
         eventSheet[cellAddress].s = {
-          font: { bold: rowIndex === 0 }, // Bold the header row
-          alignment: { vertical: 'center', horizontal: 'center' }
+          font: { bold: rowIndex === 0 || (rowIndex >= eventDetails.length - event.slots!.length - 1 && rowIndex < eventDetails.length - event.slots!.length) }, // Bold headers and slot headers
+          alignment: { vertical: 'center', horizontal: 'center' },
+          border: {
+            top: { style: 'thin', color: { rgb: '000000' } },
+            bottom: { style: 'thin', color: { rgb: '000000' } },
+            left: { style: 'thin', color: { rgb: '000000' } },
+            right: { style: 'thin', color: { rgb: '000000' } }
+          }
         };
       });
     });
@@ -50,7 +65,6 @@ export class ExcelExportService {
     const volunteerData: (string | number)[][] = [
       ['Sr.No', 'Volunteer Name', 'Phone Number', 'Gender', 'Age', 'Center', 'Center Location', 'POC', 'POC Phone Number', 'POC Comment', 'Admin Status', 'Admin Comment', 'Volunteer Arrival Date', 'Train Number', 'Slots Selected', 'Registered On']
     ];
-    
 
     volunteers.forEach((data, index) => {
       const row = [

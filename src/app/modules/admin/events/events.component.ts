@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Slot } from '../../../services/event.service';
 import { EventService } from '../../../services/event.service';
 import { AlertController, IonModal } from '@ionic/angular';
+import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-events',
@@ -35,6 +36,8 @@ export class EventsComponent implements OnInit {
   constructor(
     private eventService: EventService,
     private alertController: AlertController,
+    private confirmationDialogService: ConfirmationDialogService
+
   ) {
     this.resetNewEvent();
   }
@@ -199,30 +202,17 @@ export class EventsComponent implements OnInit {
   }
 
   async deleteEvent(eventId: string) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Delete',
-      message: 'Are you sure you want to delete this event?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          handler: async () => {
-            try {
-              await this.eventService.deleteEvent(eventId);
-              this.events = this.events.filter((event) => event.eventId !== eventId);
-            } catch (error) {
-              console.error('Error deleting event:', error);
-              this.showAlert('Error', 'Failed to delete event.');
-            }
-          },
-        },
-      ],
-    });
+    const confirmed = await this.confirmationDialogService.confirmDelete();
 
-    await alert.present();
+    if (confirmed) {
+      try {
+        await this.eventService.deleteEvent(eventId);
+        this.events = this.events.filter((event) => event.eventId !== eventId);
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        this.showAlert('Error', 'Failed to delete event.');
+      }
+    }
   }
 
   async showAlert(header: string, message: string) {

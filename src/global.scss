@@ -37,5 +37,25 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 
 ion-icon + span {
-    margin-left: 8px; /* adjust the value to your liking */
+    margin-left: 5px; /* adjust the value to your liking */
+  }
+  
+  .danger-button:disabled {
+    --background: var(--ion-color-medium);
+    --color: var(--ion-color-light);
+    pointer-events: none; /* Ensures the button is not clickable */
+    opacity: 0.5; /* Makes the button look disabled */
+  }
+  
+
+  ion-alert .danger-button:disabled {
+    --background: var(--ion-color-medium);
+    --color: var(--ion-color-light);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  
+  .danger-button {
+    background-color: #c0392b !important; /* Burgundy red background for delete button */
+    color: black !important; /* White text for delete button */
   }
