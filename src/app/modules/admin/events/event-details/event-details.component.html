@@ -1,8 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Event Details</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshPage()">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-breadcrumbs>
   <ion-breadcrumb routerLink="/admin">
@@ -62,11 +68,16 @@
             <p><strong>Center:</strong> {{ data.center.name }}</p>
             <p><strong>POC:</strong> {{ data.poc.name }}</p>
             <p><strong>Admin Status:</strong> {{ data.assignment.adminApprovalStatus }}</p>
+            <p><strong>Admin Comment:</strong> {{ data.assignment.adminComment || 'No comments' }}</p>
             <p><strong>Arrival Date:</strong> {{ data.assignment.volunteerArrivalDate ? (data.assignment.volunteerArrivalDate | date) : 'Not provided' }}</p>
             <p><strong>Train Number:</strong> {{ data.assignment.trainNumber || 'Not provided' }}</p>
             <p><strong>POC Comment:</strong> {{ data.assignment.pocComment || 'No comments' }}</p>
             <p><strong>Slots Selected:</strong> {{ data.assignment.slotsSelected.join(', ') }}</p>
           </ion-label>
+          <ion-button slot="end" color="tertiary" (click)="openEditModal(data.assignment)">
+            Edit
+          </ion-button>
+          
         </ion-item>
       </ion-list>
       <div *ngIf="volunteers.length === 0">
