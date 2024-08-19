@@ -11,6 +11,7 @@ import { Slot } from 'src/app/services/event.service';
 export class EditVolunteerModalComponent implements OnInit {
   @Input() assignment!: EventVolunteerAssignment;
   @Input() eventSlots: Slot[] = [];
+  @Input() volunteerName: string = ''; // Add the volunteerName input
   @Output() saveAssignment = new EventEmitter<EventVolunteerAssignment>();
 
   adminApprovalStatusOptions = ['waiting', 'approved', 'rejected'];

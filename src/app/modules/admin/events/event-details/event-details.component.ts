@@ -94,9 +94,15 @@ export class EventDetailsComponent implements OnInit {
   }
 
   async openEditModal(assignment: EventVolunteerAssignment) {
+    const volunteer = this.volunteers.find(v => v.assignment.id === assignment.id)?.volunteer;
+
     const modal = await this.modalController.create({
       component: EditVolunteerModalComponent,
-      componentProps: { assignment: { ...assignment }, eventSlots: this.event?.slots }
+      componentProps: {
+        assignment: { ...assignment },
+        eventSlots: this.event?.slots,
+        volunteerName: volunteer ? volunteer.name : 'Unknown' // Pass the volunteer's name
+      }
     });
   
     modal.onDidDismiss().then((result) => {
