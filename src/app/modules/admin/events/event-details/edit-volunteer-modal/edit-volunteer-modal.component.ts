@@ -33,7 +33,12 @@ export class EditVolunteerModalComponent implements OnInit {
     const selectedSlots = Object.keys(this.selectedSlots).filter(slotId => this.selectedSlots[slotId]);
   
     if (selectedSlots.length === 0) {
-      this.showAlert('Error', 'Please select at least one slot.');
+      this.showAlert('Validation Error', 'Please select at least one slot.');
+      return;
+    }
+
+    if (this.assignment.adminApprovalStatus === 'rejected' && !this.assignment.adminComment) {
+      this.showAlert('Validation Error', 'Admin comment is required when rejecting an assignment.');
       return;
     }
   
@@ -45,6 +50,7 @@ export class EditVolunteerModalComponent implements OnInit {
     // Emit the updated assignment
     this.saveAssignment.emit(updatedAssignment);
   
+    // Dismiss the modal with the updated assignment
     this.modalController.dismiss(updatedAssignment);
   }
   
