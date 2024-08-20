@@ -2,15 +2,6 @@
   <ion-toolbar>
     <div class="header-content">
       <ion-title class="responsive-title">Event Details</ion-title>
-      <div class="buttons-wrapper">
-        <ion-button (click)="refreshPage()">
-          <ion-icon slot="icon-only" name="refresh"></ion-icon>
-        </ion-button>
-        <ion-button (click)="exportToExcel()">
-          <ion-icon slot="start" name="document-outline"></ion-icon>
-          Export to Excel
-        </ion-button>
-      </div>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -58,43 +49,80 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Filters Section -->
-<ion-item>
-  <ion-label>Center</ion-label>
-  <ion-select [(ngModel)]="filterCenter">
-    <ion-select-option value="">All Centers</ion-select-option>
-    <ion-select-option *ngFor="let center of centers" [value]="center.name">{{ center.name }}</ion-select-option>
-  </ion-select>
-</ion-item>
+<!-- Actions Section: Refresh and Export -->
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Actions</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="buttons-wrapper" style="display: flex; justify-content: space-around;">
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <ion-button (click)="refreshPage()">
+          <ion-icon slot="start" name="refresh"></ion-icon>
+          Refresh
+        </ion-button>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <ion-button (click)="exportToExcel()">
+          <ion-icon slot="start" name="document-outline"></ion-icon>
+          Export to Excel
+        </ion-button>
+      </div>
+    </div>
+  </ion-card-content>
+</ion-card>
 
-<ion-item>
-  <ion-label>Gender</ion-label>
-  <ion-select [(ngModel)]="filterGender">
-    <ion-select-option value="">All Genders</ion-select-option>
-    <ion-select-option value="male">Male</ion-select-option>
-    <ion-select-option value="female">Female</ion-select-option>
-    <!-- Add more options as needed -->
-  </ion-select>
-</ion-item>
 
-<ion-item>
-  <ion-label>Admin Status</ion-label>
-  <ion-select [(ngModel)]="filterAdminStatus">
-    <ion-select-option value="">All Statuses</ion-select-option>
-    <ion-select-option value="review-pending">Review Pending</ion-select-option>
-    <ion-select-option value="waiting">Waiting</ion-select-option>
-    <ion-select-option value="approved">Approved</ion-select-option>
-    <ion-select-option value="rejected">Rejected</ion-select-option>
-  </ion-select>
-</ion-item>
 
-<ion-item>
-  <ion-label>Slots</ion-label>
-  <ion-select multiple="true" [(ngModel)]="filterSlots">
-    <ion-select-option *ngFor="let slot of event?.slots" [value]="slot.slotId"> {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}</ion-select-option>
-  </ion-select>
-</ion-item>
-<ion-button color="light" (click)="resetFilters()">Reset Filters</ion-button>
+
+<!-- Filters Section -->
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Filters</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-item>
+      <ion-label>Center</ion-label>
+      <ion-select [(ngModel)]="filterCenter">
+        <ion-select-option value="">All Centers</ion-select-option>
+        <ion-select-option *ngFor="let center of centers" [value]="center.name">{{ center.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Gender</ion-label>
+      <ion-select [(ngModel)]="filterGender">
+        <ion-select-option value="">All Genders</ion-select-option>
+        <ion-select-option value="male">Male</ion-select-option>
+        <ion-select-option value="female">Female</ion-select-option>
+        <ion-select-option value="other">Other</ion-select-option>
+        <!-- Add more options as needed -->
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Admin Status</ion-label>
+      <ion-select [(ngModel)]="filterAdminStatus">
+        <ion-select-option value="">All Statuses</ion-select-option>
+        <ion-select-option value="review-pending">Review Pending</ion-select-option>
+        <ion-select-option value="waiting">Waiting</ion-select-option>
+        <ion-select-option value="approved">Approved</ion-select-option>
+        <ion-select-option value="rejected">Rejected</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Slots</ion-label>
+      <ion-select multiple="true" [(ngModel)]="filterSlots">
+        <ion-select-option *ngFor="let slot of event?.slots" [value]="slot.slotId"> 
+          {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-button color="light" expand="block" (click)="resetFilters()">Reset Filters</ion-button>
+  </ion-card-content>
+</ion-card>
+
 
 
   <!-- Volunteers Section -->
@@ -104,7 +132,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list *ngIf="filteredVolunteers.length > 0">
-        <ion-item *ngFor="let data of filteredVolunteers  | sort: 'assignment.createdAt'">
+        <ion-item *ngFor="let data of filteredVolunteers  | sort: 'volunteer.name'">
           <ion-label>
             <h2>{{ data.volunteer.name }}</h2>
             <p><strong>Phone:</strong> {{ data.volunteer.phoneNumber }}</p>
