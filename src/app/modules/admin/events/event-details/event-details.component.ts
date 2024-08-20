@@ -20,6 +20,13 @@ export class EventDetailsComponent implements OnInit {
   event: EventModel | null = null;
   volunteers: { assignment: EventVolunteerAssignment; volunteer: Volunteer; center: Center; poc: POC }[] = [];
 
+filterCenter: string = '';
+filterGender: string = '';
+filterAdminStatus: string = '';
+filterSlots: string[] = [];
+centers: Center[] = [];
+
+
   constructor(
     private eventService: EventService,
     private assignmentService: EventVolunteerAssignmentService,
@@ -68,7 +75,7 @@ export class EventDetailsComponent implements OnInit {
         const uniqueVolunteerIds = [...new Set(assignments.map(a => a.volunteerId))];
         const uniqueCenterIds = [...new Set(assignments.map(a => a.centerId))];
         const uniquePocIds = [...new Set(assignments.map(a => a.pocId))];
-
+  
         return forkJoin({
           volunteers: this.volunteerService.getVolunteersByIds(uniqueVolunteerIds),
           centers: this.centerService.getCentersByIds(uniqueCenterIds),
@@ -78,13 +85,18 @@ export class EventDetailsComponent implements OnInit {
             const volunteersMap = new Map(result.volunteers.map(v => [v.volunteerId, v]));
             const centersMap = new Map(result.centers.map(c => [c.centerId, c]));
             const pocsMap = new Map(result.pocs.map(p => [p.pocId, p]));
-
-            return assignments.map(assignment => ({
+  
+            const combinedData = assignments.map(assignment => ({
               assignment,
               volunteer: volunteersMap.get(assignment.volunteerId)!,
               center: centersMap.get(assignment.centerId)!,
               poc: pocsMap.get(assignment.pocId)!
             }));
+  
+            // Populate the centers array with unique centers
+            this.centers = Array.from(centersMap.values());
+  
+            return combinedData;
           })
         );
       })
@@ -97,6 +109,7 @@ export class EventDetailsComponent implements OnInit {
       }
     );
   }
+  
 
   async openEditModal(assignment: EventVolunteerAssignment) {
     const volunteer = this.volunteers.find(v => v.assignment.id === assignment.id)?.volunteer;
@@ -175,5 +188,23 @@ exportToExcel() {
     this.showAlert('Export Error', 'There is no data available to export.');
   }
 }
+
+get filteredVolunteers() {
+  return this.volunteers.filter(volunteer => 
+    (this.filterCenter === '' || volunteer.center.name === this.filterCenter) &&
+    (this.filterGender === '' || volunteer.volunteer.gender === this.filterGender) &&
+    (this.filterAdminStatus === '' || volunteer.assignment.adminApprovalStatus === this.filterAdminStatus) &&
+    (this.filterSlots.length === 0 || this.filterSlots.every(slot => volunteer.assignment.slotsSelected.includes(slot)))
+  );
+}
+
+resetFilters() {
+  this.filterCenter = '';
+  this.filterGender = '';
+  this.filterAdminStatus = '';
+  this.filterSlots = [];
+}
+
+
 
 }
