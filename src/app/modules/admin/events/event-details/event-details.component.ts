@@ -25,6 +25,7 @@ filterGender: string = '';
 filterAdminStatus: string = '';
 filterSlots: string[] = [];
 centers: Center[] = [];
+filterName: string = '';
 
 
   constructor(
@@ -194,8 +195,16 @@ get filteredVolunteers() {
     (this.filterCenter === '' || volunteer.center.name === this.filterCenter) &&
     (this.filterGender === '' || volunteer.volunteer.gender === this.filterGender) &&
     (this.filterAdminStatus === '' || volunteer.assignment.adminApprovalStatus === this.filterAdminStatus) &&
-    (this.filterSlots.length === 0 || this.filterSlots.every(slot => volunteer.assignment.slotsSelected.includes(slot)))
+    (this.filterSlots.length === 0 || this.filterSlots.every(slot => volunteer.assignment.slotsSelected.includes(slot))) &&
+    (this.filterName === '' || this.fuzzySearch(volunteer.volunteer.name, this.filterName))
   );
+}
+
+// Fuzzy search method to match name formats
+fuzzySearch(fullName: string, searchTerm: string): boolean {
+  const nameParts = fullName.toLowerCase().split(' ');
+  const searchParts = searchTerm.toLowerCase().split(' ');
+  return searchParts.every(part => nameParts.some(namePart => namePart.includes(part)));
 }
 
 resetFilters() {
@@ -203,7 +212,9 @@ resetFilters() {
   this.filterGender = '';
   this.filterAdminStatus = '';
   this.filterSlots = [];
+  this.filterName = '';
 }
+
 
 
 

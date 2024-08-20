@@ -81,48 +81,67 @@
     <ion-card-title>Filters</ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-item>
-      <ion-label>Center</ion-label>
-      <ion-select [(ngModel)]="filterCenter">
-        <ion-select-option value="">All Centers</ion-select-option>
-        <ion-select-option *ngFor="let center of centers" [value]="center.name">{{ center.name }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+    <div class="filters-wrapper">
+      <div class="filter-item">
+        <ion-item>
+          <ion-label position="stacked">Search by Name</ion-label>
+          <ion-searchbar [(ngModel)]="filterName" placeholder="Enter volunteer's name"></ion-searchbar>
+        </ion-item>
+      </div>
 
-    <ion-item>
-      <ion-label>Gender</ion-label>
-      <ion-select [(ngModel)]="filterGender">
-        <ion-select-option value="">All Genders</ion-select-option>
-        <ion-select-option value="male">Male</ion-select-option>
-        <ion-select-option value="female">Female</ion-select-option>
-        <ion-select-option value="other">Other</ion-select-option>
-        <!-- Add more options as needed -->
-      </ion-select>
-    </ion-item>
+      <div class="filter-item">
+        <ion-item>
+          <ion-label>Center</ion-label>
+          <ion-select [(ngModel)]="filterCenter">
+            <ion-select-option value="">All Centers</ion-select-option>
+            <ion-select-option *ngFor="let center of centers" [value]="center.name">{{ center.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
-    <ion-item>
-      <ion-label>Admin Status</ion-label>
-      <ion-select [(ngModel)]="filterAdminStatus">
-        <ion-select-option value="">All Statuses</ion-select-option>
-        <ion-select-option value="review-pending">Review Pending</ion-select-option>
-        <ion-select-option value="waiting">Waiting</ion-select-option>
-        <ion-select-option value="approved">Approved</ion-select-option>
-        <ion-select-option value="rejected">Rejected</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <div class="filter-item">
+        <ion-item>
+          <ion-label>Gender</ion-label>
+          <ion-select [(ngModel)]="filterGender">
+            <ion-select-option value="">All Genders</ion-select-option>
+            <ion-select-option value="male">Male</ion-select-option>
+            <ion-select-option value="female">Female</ion-select-option>
+            <ion-select-option value="other">Other</ion-select-option>
+            <!-- Add more options as needed -->
+          </ion-select>
+        </ion-item>
+      </div>
 
-    <ion-item>
-      <ion-label>Slots</ion-label>
-      <ion-select multiple="true" [(ngModel)]="filterSlots">
-        <ion-select-option *ngFor="let slot of event?.slots" [value]="slot.slotId"> 
-          {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-button color="light" expand="block" (click)="resetFilters()">Reset Filters</ion-button>
+      <div class="filter-item">
+        <ion-item>
+          <ion-label>Admin Status</ion-label>
+          <ion-select [(ngModel)]="filterAdminStatus">
+            <ion-select-option value="">All Statuses</ion-select-option>
+            <ion-select-option value="review-pending">Review Pending</ion-select-option>
+            <ion-select-option value="waiting">Waiting</ion-select-option>
+            <ion-select-option value="approved">Approved</ion-select-option>
+            <ion-select-option value="rejected">Rejected</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="filter-item">
+        <ion-item>
+          <ion-label>Slots</ion-label>
+          <ion-select multiple="true" [(ngModel)]="filterSlots">
+            <ion-select-option *ngFor="let slot of event?.slots" [value]="slot.slotId">
+              {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="filter-item">
+        <ion-button color="light" expand="block" (click)="resetFilters()">Reset Filters</ion-button>
+      </div>
+    </div>
   </ion-card-content>
 </ion-card>
-
 
 
   <!-- Volunteers Section -->

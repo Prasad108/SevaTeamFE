@@ -1,0 +1,39 @@
+.filters-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-item {
+  flex: 1 1 100%; /* Default: Each item takes full width on small screens */
+}
+
+@media (min-width: 768px) {
+  .filter-item {
+    flex: 1 1 auto; /* Each item takes up as much width as needed */
+    max-width: calc(100% / 6 - 16px); /* Ensure all filters fit in one row */
+  }
+
+  ion-item {
+    --padding-start: 0; /* Remove extra padding to make the filters fit better */
+  }
+
+  ion-select {
+    --min-width: auto; /* Allow select to take the necessary width */
+  }
+
+  ion-searchbar {
+    --min-width: auto; /* Allow searchbar to take the necessary width */
+  }
+
+  ion-button {
+    --min-width: auto; /* Allow button to take the necessary width */
+  }
+}
+
+@media (min-width: 1024px) {
+  .filter-item {
+    flex: 1 1 auto;
+    max-width: calc(100% / 6 - 16px); /* Adjust width as needed for larger screens */
+  }
+}
