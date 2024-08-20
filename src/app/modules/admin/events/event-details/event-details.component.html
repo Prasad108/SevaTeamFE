@@ -94,7 +94,7 @@
           <ion-label>Center</ion-label>
           <ion-select [(ngModel)]="filterCenter">
             <ion-select-option value="">All Centers</ion-select-option>
-            <ion-select-option *ngFor="let center of centers" [value]="center.name">{{ center.name }}</ion-select-option>
+            <ion-select-option *ngFor="let center of centers" [value]="center">{{ center }}</ion-select-option>
           </ion-select>
         </ion-item>
       </div>
@@ -144,37 +144,39 @@
 </ion-card>
 
 
-  <!-- Volunteers Section -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Registered Volunteers</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list *ngIf="filteredVolunteers.length > 0">
-        <ion-item *ngFor="let data of filteredVolunteers  | sort: 'volunteer.name'">
-          <ion-label>
-            <h2>{{ data.volunteer.name }}</h2>
-            <p><strong>Phone:</strong> {{ data.volunteer.phoneNumber }}</p>
-            <p><strong>Gender:</strong> {{ data.volunteer.gender }}</p>
-            <p><strong>Age:</strong> {{ data.volunteer.age }}</p>
-            <p><strong>Center:</strong> {{ data.center.name }}</p>
-            <p><strong>POC:</strong> {{ data.poc.name }}</p>
-            <p><strong>Admin Status:</strong> {{ data.assignment.adminApprovalStatus }}</p>
-            <p><strong>Admin Comment:</strong> {{ data.assignment.adminComment || 'No comments' }}</p>
-            <p><strong>Arrival Date:</strong> {{ data.assignment.volunteerArrivalDate ? (data.assignment.volunteerArrivalDate | date) : 'Not provided' }}</p>
-            <p><strong>Train Number:</strong> {{ data.assignment.trainNumber || 'Not provided' }}</p>
-            <p><strong>POC Comment:</strong> {{ data.assignment.pocComment || 'No comments' }}</p>
-            <p><strong>Slots Selected:</strong> {{ data.assignment.slotsSelected.join(', ') }}</p>
-          </ion-label>
-          <ion-button slot="end" color="tertiary" (click)="openEditModal(data.assignment)">
-            Edit
-          </ion-button>
-          
-        </ion-item>
-      </ion-list>
-      <div *ngIf="volunteers.length === 0">
-        <p>No volunteers registered for this event.</p>
-      </div>
-    </ion-card-content>
-  </ion-card>
+<!-- Volunteers Section -->
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Registered Volunteers</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list *ngIf="filteredAssignments.length > 0">
+      <ion-item *ngFor="let assignment of filteredAssignments | sort: 'volunteer.name'">
+        <ion-label>
+          <h2>{{ assignment.volunteer.name }}</h2>
+          <p><strong>Phone:</strong> {{ assignment.volunteer.phoneNumber }}</p>
+          <p><strong>Gender:</strong> {{ assignment.volunteer.gender }}</p>
+          <p><strong>Age:</strong> {{ assignment.volunteer.age }}</p>
+          <p><strong>Center:</strong> {{ assignment.center.name }}</p>
+          <p><strong>Center Location:</strong> {{ assignment.center.location }}</p>
+          <p><strong>POC:</strong> {{ assignment.poc?.name }}</p>
+          <p><strong>POC Phone:</strong> {{ assignment.poc?.phoneNumber }}</p>
+          <p><strong>Admin Status:</strong> {{ assignment.adminApprovalStatus }}</p>
+          <p><strong>Admin Comment:</strong> {{ assignment.adminComment || 'No comments' }}</p>
+          <p><strong>Arrival Date:</strong> {{ assignment.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date) : 'Not provided' }}</p>
+          <p><strong>Train Number:</strong> {{ assignment.trainNumber || 'Not provided' }}</p>
+          <p><strong>POC Comment:</strong> {{ assignment.pocComment || 'No comments' }}</p>
+          <p><strong>Slots Selected:</strong> {{ assignment.slotsSelected.join(', ') }}</p>
+        </ion-label>
+        <ion-button slot="end" color="tertiary" (click)="openEditModal(assignment)">
+          Edit
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="filteredAssignments.length === 0">
+      <p>No volunteers registered for this event.</p>
+    </div>
+  </ion-card-content>
+</ion-card>
+
 </ion-content>

@@ -91,81 +91,80 @@
     </ion-card-content>
   </ion-card>
 
-<!-- Assigned Volunteers Section -->
-<ion-card *ngIf="!isRegistrationFuture">
-  <ion-card-header>
-    <ion-card-title>Assigned Volunteers</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-list *ngIf="assignedVolunteers.length > 0">
-      <ion-item *ngFor="let assignment of assignedVolunteers | sort: 'createdAt'">
-        <ion-label>
-          <h2>{{ getVolunteerName(assignment.volunteerId) }}</h2>
-          <p>Arrival: {{ assignment?.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date:'medium') : 'NA' }}</p>          <p>Slots Selected: {{ assignment.slotsSelected.join(', ') }}</p>
-          <p>Admin Approval Status: {{ assignment.adminApprovalStatus }}</p>
-          <p>Admin Comment: {{ assignment.adminComment }}</p>
-          <p>POC Comment: {{ assignment.pocComment }}</p>
-          <p *ngIf="assignment.trainNumber">Train Number: {{ assignment.trainNumber }}</p>
-        </ion-label>
-        <ion-button color="tertiary" (click)="openEditAssignmentModal(assignment)">
-          Edit
-        </ion-button>
-        <ion-button color="danger" (click)="removeVolunteerFromEvent(assignment)" [disabled]="isRegistrationClosed">
-          Remove
-        </ion-button>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="assignedVolunteers.length === 0">
-      <p>No volunteers assigned to this event.</p>
-    </div>
-  </ion-card-content>
-</ion-card>
-
-
-
-<!-- Edit Assignment Modal -->
-<ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditAssignmentModal()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Edit Assignment</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeEditAssignmentModal()">
-            <ion-icon name="close"></ion-icon>
+  <!-- Assigned Volunteers Section -->
+  <ion-card *ngIf="!isRegistrationFuture">
+    <ion-card-header>
+      <ion-card-title>Assigned Volunteers</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="assignedVolunteers.length > 0">
+        <ion-item *ngFor="let assignment of assignedVolunteers">
+          <ion-label>
+            <h2>{{ assignment.volunteer.name }}</h2>
+            <p>Arrival: {{ assignment?.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date:'medium') : 'NA' }}</p>
+            <p>Slots Selected: {{ assignment.slotsSelected.join(', ') }}</p>
+            <p>Admin Approval Status: {{ assignment.adminApprovalStatus }}</p>
+            <p>Admin Comment: {{ assignment.adminComment }}</p>
+            <p>POC Comment: {{ assignment.pocComment }}</p>
+            <p *ngIf="assignment.trainNumber">Train Number: {{ assignment.trainNumber }}</p>
+          </ion-label>
+          <ion-button color="tertiary" (click)="openEditAssignmentModal(assignment)">
+            Edit
           </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="modal-content" *ngIf="currentAssignment">
-      <ion-item class="responsive-item">
-        <ion-label position="stacked">Volunteer Name</ion-label>
-        <ion-input [value]="getVolunteerName(currentAssignment.volunteerId || '')" readonly></ion-input>
-      </ion-item>
-      <ion-item class="responsive-item">
-        <ion-label position="stacked">Volunteer Arrival Date</ion-label>
-        <ion-datetime
-          [(ngModel)]="currentAssignment.volunteerArrivalDate"
-          presentation="date-time"
-          [max]="selectedEvent?.endDate"
-        ></ion-datetime>
-      </ion-item>
-      <ion-item class="responsive-item">
-        <ion-label position="stacked">Train Number</ion-label>
-        <ion-input [(ngModel)]="currentAssignment.trainNumber" maxlength="10"></ion-input>
-      </ion-item>
-      <ion-item class="responsive-item">
-        <ion-label position="stacked">Poc Comment</ion-label>
-        <ion-textarea [(ngModel)]="currentAssignment.pocComment" maxlength="500"></ion-textarea>
-      </ion-item>
-      <ion-button expand="block" color="primary" (click)="saveUpdatedAssignment()">
-        Save Changes
-      </ion-button>
-      <ion-button expand="full" color="light"  (click)="closeEditAssignmentModal()">
-        Cancel
-      </ion-button>
-    </ion-content>
-  </ng-template>
-</ion-modal>
+          <ion-button color="danger" (click)="removeVolunteerFromEvent(assignment)" [disabled]="isRegistrationClosed">
+            Remove
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="assignedVolunteers.length === 0">
+        <p>No volunteers assigned to this event.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Edit Assignment Modal -->
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditAssignmentModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Edit Assignment</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeEditAssignmentModal()">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content" *ngIf="currentAssignment">
+        <ion-item class="responsive-item">
+          <ion-label position="stacked">Volunteer Name</ion-label>
+          <ion-input [value]="currentAssignment.volunteer.name" readonly></ion-input>
+        </ion-item>
+        <ion-item class="responsive-item">
+          <ion-label position="stacked">Volunteer Arrival Date</ion-label>
+          <ion-datetime
+            [(ngModel)]="currentAssignment.volunteerArrivalDate"
+            presentation="date-time"
+            [max]="selectedEvent?.endDate"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item class="responsive-item">
+          <ion-label position="stacked">Train Number</ion-label>
+          <ion-input [(ngModel)]="currentAssignment.trainNumber" maxlength="10"></ion-input>
+        </ion-item>
+        <ion-item class="responsive-item">
+          <ion-label position="stacked">Poc Comment</ion-label>
+          <ion-textarea [(ngModel)]="currentAssignment.pocComment" maxlength="500"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" color="primary" (click)="saveUpdatedAssignment()">
+          Save Changes
+        </ion-button>
+        <ion-button expand="full" color="light" (click)="closeEditAssignmentModal()">
+          Cancel
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
   <!-- Slot Selection Modal -->
   <ion-modal [isOpen]="isSlotSelectionOpen" (didDismiss)="onSlotSelectionClose()">
@@ -193,8 +192,5 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
-
-
 
 </ion-content>

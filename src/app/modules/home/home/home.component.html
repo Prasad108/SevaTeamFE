@@ -7,7 +7,7 @@
 <ion-breadcrumbs>
   <ion-breadcrumb>
     <ion-icon name="home"></ion-icon>
-    <span>Home </span>
+    <span>Home</span>
   </ion-breadcrumb>
 </ion-breadcrumbs>
 
@@ -25,5 +25,15 @@
     <ion-button expand="full" color="primary" (click)="navigateToLogin()">
       Go to Login
     </ion-button>
+
+    <h1>Manage Test Data</h1>
+    <p>Use the buttons below to generate or delete test data.</p>
+    <ion-button expand="full" color="secondary" (click)="generateTestData()">
+      Generate Test Data
+    </ion-button>
+    <ion-button expand="full" color="danger" (click)="deleteTestData()">
+      Delete Test Data
+    </ion-button>
   </div>
+
 </ion-content>

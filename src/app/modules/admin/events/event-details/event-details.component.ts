@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
 import { Event as EventModel, EventService } from '../../../../services/event.service';
 import { EventVolunteerAssignmentService, EventVolunteerAssignment } from '../../../../services/event-volunteer-assignment.service';
-import { VolunteerService, Volunteer } from '../../../../services/volunteer.service';
-import { CenterService, Center } from '../../../../services/center.service';
-import { PocService, POC } from '../../../../services/poc.service';
 import { AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { EditVolunteerModalComponent } from './edit-volunteer-modal/edit-volunteer-modal.component';
 import { ExcelExportService } from 'src/app/services/excel-export.service';
@@ -18,22 +13,18 @@ import { ExcelExportService } from 'src/app/services/excel-export.service';
 })
 export class EventDetailsComponent implements OnInit {
   event: EventModel | null = null;
-  volunteers: { assignment: EventVolunteerAssignment; volunteer: Volunteer; center: Center; poc: POC }[] = [];
+  assignments: EventVolunteerAssignment[] = [];
 
-filterCenter: string = '';
-filterGender: string = '';
-filterAdminStatus: string = '';
-filterSlots: string[] = [];
-centers: Center[] = [];
-filterName: string = '';
-
+  filterCenter: string = '';
+  filterGender: string = '';
+  filterAdminStatus: string = '';
+  filterSlots: string[] = [];
+  centers: string[] = []; // Using string for center names
+  filterName: string = '';
 
   constructor(
     private eventService: EventService,
     private assignmentService: EventVolunteerAssignmentService,
-    private volunteerService: VolunteerService,
-    private centerService: CenterService,
-    private pocService: PocService,
     private route: ActivatedRoute,
     private modalController: ModalController,
     private alertController: AlertController,
@@ -45,6 +36,7 @@ filterName: string = '';
     const eventId = this.route.snapshot.paramMap.get('eventId');
     if (eventId) {
       this.fetchEventDetails(eventId);
+      this.fetchVolunteerAssignments(eventId);
     }
   }
 
@@ -57,7 +49,6 @@ filterName: string = '';
     this.eventService.getEventById(eventId).subscribe(
       async (event) => {
         this.event = event;
-        await this.fetchVolunteerAssignments(eventId);
         await loading.dismiss(); // Dismiss loading when done
       },
       async (error) => {
@@ -68,59 +59,31 @@ filterName: string = '';
   }
 
   async fetchVolunteerAssignments(eventId: string) {
-    this.assignmentService.getAssignmentsForEvent(eventId).pipe(
-      switchMap((assignments) => {
-        if (assignments.length === 0) {
-          return []; 
-        }
-        const uniqueVolunteerIds = [...new Set(assignments.map(a => a.volunteerId))];
-        const uniqueCenterIds = [...new Set(assignments.map(a => a.centerId))];
-        const uniquePocIds = [...new Set(assignments.map(a => a.pocId))];
-  
-        return forkJoin({
-          volunteers: this.volunteerService.getVolunteersByIds(uniqueVolunteerIds),
-          centers: this.centerService.getCentersByIds(uniqueCenterIds),
-          pocs: this.pocService.getPocsByIds(uniquePocIds)
-        }).pipe(
-          map((result) => {
-            const volunteersMap = new Map(result.volunteers.map(v => [v.volunteerId, v]));
-            const centersMap = new Map(result.centers.map(c => [c.centerId, c]));
-            const pocsMap = new Map(result.pocs.map(p => [p.pocId, p]));
-  
-            const combinedData = assignments.map(assignment => ({
-              assignment,
-              volunteer: volunteersMap.get(assignment.volunteerId)!,
-              center: centersMap.get(assignment.centerId)!,
-              poc: pocsMap.get(assignment.pocId)!
-            }));
-  
-            // Populate the centers array with unique centers
-            this.centers = Array.from(centersMap.values());
-  
-            return combinedData;
-          })
-        );
-      })
-    ).subscribe(
-      (combinedData) => {
-        this.volunteers = combinedData;
+    const loading = await this.loadingController.create({
+      message: 'Loading volunteer assignments...',
+    });
+    await loading.present();
+
+    this.assignmentService.getAssignmentsForEvent(eventId).subscribe(
+      (assignments) => {
+        this.assignments = assignments;
+        this.centers = Array.from(new Set(assignments.map(a => a.center?.name).filter(name => name)));
+        loading.dismiss();
       },
       (error) => {
         console.error('Error fetching volunteer assignments:', error);
+        loading.dismiss();
       }
     );
   }
-  
 
   async openEditModal(assignment: EventVolunteerAssignment) {
-    const volunteer = this.volunteers.find(v => v.assignment.id === assignment.id)?.volunteer;
-
     const modal = await this.modalController.create({
       component: EditVolunteerModalComponent,
       componentProps: {
         assignment: { ...assignment },
         eventSlots: this.event?.slots,
-        volunteerName: volunteer ? volunteer.name : 'Unknown' // Pass the volunteer's name
+        volunteerName: assignment.volunteer.name // Pass the volunteer's name
       }
     });
   
@@ -149,12 +112,12 @@ filterName: string = '';
   
     this.assignmentService.updateAssignment(updatedAssignment).subscribe(
       (updatedAssignmentFromService) => {
-        // Find the index of the updated assignment in the volunteers array
-        const index = this.volunteers.findIndex(v => v.assignment.id === updatedAssignmentFromService.id);
+        // Find the index of the updated assignment in the assignments array
+        const index = this.assignments.findIndex(a => a.id === updatedAssignmentFromService.id);
     
         if (index !== -1) {
-          // Update the assignment in the volunteers array
-          this.volunteers[index].assignment = updatedAssignmentFromService;
+          // Update the assignment in the array
+          this.assignments[index] = updatedAssignmentFromService;
         }
       },
       (error) => {
@@ -173,49 +136,44 @@ filterName: string = '';
   
     await alert.present();
   }
-  
 
   async refreshPage() {
-  const eventId = this.route.snapshot.paramMap.get('eventId');
-  if (eventId) {
-    await this.fetchEventDetails(eventId);
+    const eventId = this.route.snapshot.paramMap.get('eventId');
+    if (eventId) {
+      await this.fetchVolunteerAssignments(eventId);
+    }
   }
-}
 
-exportToExcel() {
-  if (this.event && this.volunteers.length > 0) {
-    this.excelExportService.exportEventDetailsToExcel(this.event, this.volunteers);
-  } else {
-    this.showAlert('Export Error', 'There is no data available to export.');
+  exportToExcel() {
+    if (this.event && this.assignments.length > 0) {
+      this.excelExportService.exportEventDetailsToExcel(this.event, this.assignments);
+    } else {
+      this.showAlert('Export Error', 'There is no data available to export.');
+    }
   }
-}
 
-get filteredVolunteers() {
-  return this.volunteers.filter(volunteer => 
-    (this.filterCenter === '' || volunteer.center.name === this.filterCenter) &&
-    (this.filterGender === '' || volunteer.volunteer.gender === this.filterGender) &&
-    (this.filterAdminStatus === '' || volunteer.assignment.adminApprovalStatus === this.filterAdminStatus) &&
-    (this.filterSlots.length === 0 || this.filterSlots.every(slot => volunteer.assignment.slotsSelected.includes(slot))) &&
-    (this.filterName === '' || this.fuzzySearch(volunteer.volunteer.name, this.filterName))
-  );
-}
+  get filteredAssignments() {
+    return this.assignments.filter(assignment => 
+      (this.filterCenter === '' || assignment.center.name === this.filterCenter) &&
+      (this.filterGender === '' || assignment.volunteer.gender === this.filterGender) &&
+      (this.filterAdminStatus === '' || assignment.adminApprovalStatus === this.filterAdminStatus) &&
+      (this.filterSlots.length === 0 || this.filterSlots.every(slot => assignment.slotsSelected.includes(slot))) &&
+      (this.filterName === '' || this.fuzzySearch(assignment.volunteer.name, this.filterName))
+    );
+  }
 
-// Fuzzy search method to match name formats
-fuzzySearch(fullName: string, searchTerm: string): boolean {
-  const nameParts = fullName.toLowerCase().split(' ');
-  const searchParts = searchTerm.toLowerCase().split(' ');
-  return searchParts.every(part => nameParts.some(namePart => namePart.includes(part)));
-}
+  // Fuzzy search method to match name formats
+  fuzzySearch(fullName: string, searchTerm: string): boolean {
+    const nameParts = fullName.toLowerCase().split(' ');
+    const searchParts = searchTerm.toLowerCase().split(' ');
+    return searchParts.every(part => nameParts.some(namePart => namePart.includes(part)));
+  }
 
-resetFilters() {
-  this.filterCenter = '';
-  this.filterGender = '';
-  this.filterAdminStatus = '';
-  this.filterSlots = [];
-  this.filterName = '';
-}
-
-
-
-
+  resetFilters() {
+    this.filterCenter = '';
+    this.filterGender = '';
+    this.filterAdminStatus = '';
+    this.filterSlots = [];
+    this.filterName = '';
+  }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, query, where, documentId } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, query, where, documentId, getDoc } from '@angular/fire/firestore';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -69,6 +69,14 @@ export class CenterService {
     const q = query(this.centersCollection, where(documentId(), 'in', centerIds));
     return from(getDocs(q)).pipe(
       map(snapshot => snapshot.docs.map(doc => ({ centerId: doc.id, ...doc.data() } as Center)))
+    );
+  }
+
+  // Fetch a center by its ID
+  getCenterById(centerId: string): Observable<Center | undefined> {
+    const centerDocRef = doc(this.centersCollection, centerId);
+    return from(getDoc(centerDocRef)).pipe(
+      map(snapshot => snapshot.exists() ? { centerId: snapshot.id, ...snapshot.data() } as Center : undefined)
     );
   }
 }

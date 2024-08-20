@@ -3,16 +3,13 @@ import * as XLSX from 'xlsx-js-style';
 import { saveAs } from 'file-saver';
 import { Event, Slot } from './event.service';
 import { EventVolunteerAssignment } from './event-volunteer-assignment.service';
-import { Volunteer } from './volunteer.service';
-import { Center } from './center.service';
-import { POC } from './poc.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExcelExportService {
 
-  exportEventDetailsToExcel(event: Event, volunteers: { assignment: EventVolunteerAssignment; volunteer: Volunteer; center: Center; poc: POC }[]): void {
+  exportEventDetailsToExcel(event: Event, assignments: EventVolunteerAssignment[]): void {
     const workbook = XLSX.utils.book_new();
 
     // Event Details Sheet
@@ -66,24 +63,24 @@ export class ExcelExportService {
       ['Sr.No', 'Volunteer Name', 'Phone Number', 'Gender', 'Age', 'Center', 'Center Location', 'POC', 'POC Phone Number', 'POC Comment', 'Admin Status', 'Admin Comment', 'Volunteer Arrival Date', 'Train Number', 'Slots Selected', 'Registered On']
     ];
 
-    volunteers.forEach((data, index) => {
+    assignments.forEach((assignment, index) => {
       const row = [
         index + 1,
-        data.volunteer.name,
-        data.volunteer.phoneNumber,
-        data.volunteer.gender,
-        data.volunteer.age,
-        data.center.name,
-        data.center.location,
-        data.poc.name,
-        data.poc.phoneNumber,
-        data.assignment.pocComment || 'NA',
-        data.assignment.adminApprovalStatus,
-        data.assignment.adminComment || 'NA',
-        data.assignment.volunteerArrivalDate || 'NA',
-        data.assignment.trainNumber || 'NA',
-        data.assignment.slotsSelected.join(', '),
-        data.assignment.createdAt
+        assignment.volunteer.name,
+        assignment.volunteer.phoneNumber,
+        assignment.volunteer.gender,
+        assignment.volunteer.age,
+        assignment.center.name,
+        assignment.center.location,
+        assignment.poc ? assignment.poc.name : 'NA', // Add null check here
+        assignment.poc ? assignment.poc.phoneNumber : 'NA', // Add null check here
+        assignment.pocComment || 'NA',
+        assignment.adminApprovalStatus,
+        assignment.adminComment || 'NA',
+        assignment.volunteerArrivalDate || 'NA',
+        assignment.trainNumber || 'NA',
+        assignment.slotsSelected.join(', '),
+        assignment.createdAt
       ];
       volunteerData.push(row);
     });

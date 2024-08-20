@@ -10,7 +10,7 @@ export interface Slot {
 }
 
 export interface Event {
-  eventId?: string;
+  eventId?: string; // Optional because it will be auto-generated
   name: string;
   startDate: string;
   endDate: string;
