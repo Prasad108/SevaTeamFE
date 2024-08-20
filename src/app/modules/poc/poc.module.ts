@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { ApproveVolunteersComponent } from './approve-volunteers/approve-volunteers.component';
 import { UpdateVolunteersComponent } from './events/update-volunteers/update-volunteers.component';
 import { LoadingController } from '@ionic/angular';
+import { SortPipe } from 'src/app/pipe/sort.pipe';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { LoadingController } from '@ionic/angular';
     PocRoutingModule,
     IonicModule,
     FormsModule,
+    SortPipe
   ],
   providers: [LoadingController],
 

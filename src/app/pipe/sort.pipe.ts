@@ -10,7 +10,21 @@ export class SortPipe implements PipeTransform {
     if (!array || !key) {
       return array;
     }
-    return array.slice().sort((a, b) => a[key].localeCompare(b[key]));
+
+    // Handle nested properties (e.g., "assignment.createdAt")
+    const keys = key.split('.');
+
+    return array.slice().sort((a, b) => {
+      let aValue = a;
+      let bValue = b;
+
+      for (const k of keys) {
+        aValue = aValue[k];
+        bValue = bValue[k];
+      }
+
+      return aValue.localeCompare(bValue);
+    });
   }
 
 }

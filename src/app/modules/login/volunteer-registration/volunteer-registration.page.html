@@ -4,6 +4,17 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-breadcrumbs>
+  <ion-breadcrumb routerLink="/home">
+    <ion-icon name="home"></ion-icon>
+    <span>Home</span>
+  </ion-breadcrumb>
+  <ion-breadcrumb>
+    <ion-icon name="person-add"></ion-icon>
+    <span>Volunteer Registration</span>
+  </ion-breadcrumb>
+</ion-breadcrumbs>
+
 <ion-content class="ion-padding">
   <ion-grid>
     <ion-row>
@@ -70,21 +81,21 @@
                 <small *ngIf="gender.errors?.['required']">Gender is required.</small>
               </ion-note>
 
-              <!-- Age Field -->
+              <!-- Age Field with Minimum Age Validation -->
               <ion-item>
                 <ion-label position="floating">Age</ion-label>
                 <ion-input
                   [(ngModel)]="newVolunteer.age"
                   name="age"
                   type="number"
-                  min="0"
+                  min="18"
                   required
                   #age="ngModel"
                 ></ion-input>
               </ion-item>
               <ion-note *ngIf="age.touched && age.invalid" color="danger">
                 <small *ngIf="age.errors?.['required']">Age is required.</small>
-                <small *ngIf="age.errors?.['min']">Age must be a positive number.</small>
+                <small *ngIf="age.errors?.['min']">You must be at least 18 years old to register.</small>
               </ion-note>
 
               <!-- Center Selection with Default Interface -->

@@ -73,7 +73,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list *ngIf="availableVolunteers.length > 0">
-        <ion-item *ngFor="let volunteer of availableVolunteers">
+        <ion-item *ngFor="let volunteer of availableVolunteers | sort: 'name'">
           <ion-label>
             <h2>{{ volunteer.name }}</h2>
             <p>Phone: {{ volunteer.phoneNumber }}</p>
@@ -98,7 +98,7 @@
   </ion-card-header>
   <ion-card-content>
     <ion-list *ngIf="assignedVolunteers.length > 0">
-      <ion-item *ngFor="let assignment of assignedVolunteers">
+      <ion-item *ngFor="let assignment of assignedVolunteers | sort: 'createdAt'">
         <ion-label>
           <h2>{{ getVolunteerName(assignment.volunteerId) }}</h2>
           <p>Arrival: {{ assignment?.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date:'medium') : 'NA' }}</p>          <p>Slots Selected: {{ assignment.slotsSelected.join(', ') }}</p>

@@ -88,6 +88,9 @@
               #email="ngModel"
               (ionBlur)="email.control.markAsTouched()"
               autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
             ></ion-input>
             <ion-item lines="none" class="error-message" *ngIf="email.invalid && email.touched">
               <ion-text color="danger">Please enter a valid email address.</ion-text>
@@ -107,6 +110,9 @@
               #phoneNumber="ngModel"
               (ionBlur)="phoneNumber.control.markAsTouched()"
               autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
             ></ion-input>
             <ion-item lines="none" class="error-message" *ngIf="phoneNumber.invalid && phoneNumber.touched">
               <ion-text color="danger">Please enter a valid 10-digit phone number without spaces.</ion-text>
@@ -120,7 +126,12 @@
               [(ngModel)]="newPoc.initialPassword"
               name="initialPassword"
               [readonly]="editMode" 
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
               required
+              minlength="5"
             ></ion-input>
             <ion-button *ngIf="editMode" fill="clear" size="small" slot="end" (click)="togglePasswordVisibility()">
               <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>

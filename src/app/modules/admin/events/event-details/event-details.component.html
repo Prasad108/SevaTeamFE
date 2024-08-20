@@ -16,8 +16,6 @@
 </ion-header>
 
 
-
-
 <ion-breadcrumbs>
   <ion-breadcrumb routerLink="/admin">
     <ion-icon name="home"></ion-icon>
@@ -67,7 +65,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list *ngIf="volunteers.length > 0">
-        <ion-item *ngFor="let data of volunteers">
+        <ion-item *ngFor="let data of volunteers  | sort: 'assignment.createdAt'">
           <ion-label>
             <h2>{{ data.volunteer.name }}</h2>
             <p><strong>Phone:</strong> {{ data.volunteer.phoneNumber }}</p>

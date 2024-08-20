@@ -5,14 +5,14 @@ import { IonicModule, AlertController } from '@ionic/angular';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Center, CenterService } from 'src/app/services/center.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-volunteer-registration',
   templateUrl: './volunteer-registration.page.html',
   styleUrls: ['./volunteer-registration.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule]
+  imports: [IonicModule, FormsModule, CommonModule, RouterModule]
 })
 export class VolunteerRegistrationPage implements OnInit {
   centers: Center[] = [];

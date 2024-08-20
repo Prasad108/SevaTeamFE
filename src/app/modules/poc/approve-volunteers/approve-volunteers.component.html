@@ -18,7 +18,7 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item-group *ngFor="let volunteer of pendingVolunteers">
+    <ion-item-group *ngFor="let volunteer of pendingVolunteers | sort: 'name'">
       <ion-item lines="full">
         <ion-label>
           <h2>{{ volunteer.name }}</h2>

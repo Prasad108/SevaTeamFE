@@ -5,8 +5,7 @@ import { RoleGuard } from './guards/role.guard';
 export const routes: Routes = [
   {
     path: 'home',
-    loadComponent: () =>
-      import('./modules/home/home/home.component').then((m) => m.HomeComponent),
+    loadComponent: () => import('./modules/home/home/home.component').then((m) => m.HomeComponent),
     title: 'Seva Adhikar Diyo - Home'
   },
   {
@@ -17,16 +16,14 @@ export const routes: Routes = [
   },
   {
     path: 'poc',
-    loadChildren: () =>
-      import('./modules/poc/poc.module').then((m) => m.PocModule),
+    loadChildren: () => import('./modules/poc/poc.module').then((m) => m.PocModule),
     title: 'Seva Adhikar Diyo - POC',
     canActivate: [AuthGuard, RoleGuard],
     data: { expectedRole: 'poc' }
   },
   {
     path: 'admin',
-    loadChildren: () =>
-      import('./modules/admin/admin.module').then((m) => m.AdminModule),
+    loadChildren: () => import('./modules/admin/admin.module').then((m) => m.AdminModule),
       title: 'Seva Adhikar Diyo - Admin',
       canActivate: [AuthGuard, RoleGuard],
       data: { expectedRole: 'admin' }
@@ -45,6 +42,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/login'
+    redirectTo: '/home'
   }
 ];
