@@ -17,7 +17,8 @@ export class HomeComponent {
     private router: Router,
     private testDataService: TestDataService,
     private loadingController: LoadingController
-  ) {}
+  ) {
+  }
 
   async generateTestData() {
     const loading = await this.loadingController.create({

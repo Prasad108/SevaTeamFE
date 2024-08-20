@@ -19,8 +19,12 @@ export class EventDetailsComponent implements OnInit {
   filterGender: string = '';
   filterAdminStatus: string = '';
   filterSlots: string[] = [];
-  centers: string[] = []; // Using string for center names
+  centers: string[] = [];
   filterName: string = '';
+
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 10; // Adjust this number to control how many items per page
 
   constructor(
     private eventService: EventService,
@@ -49,11 +53,11 @@ export class EventDetailsComponent implements OnInit {
     this.eventService.getEventById(eventId).subscribe(
       async (event) => {
         this.event = event;
-        await loading.dismiss(); // Dismiss loading when done
+        await loading.dismiss();
       },
       async (error) => {
         console.error('Error fetching event details:', error);
-        await loading.dismiss(); // Dismiss loading on error
+        await loading.dismiss();
       }
     );
   }
@@ -83,7 +87,7 @@ export class EventDetailsComponent implements OnInit {
       componentProps: {
         assignment: { ...assignment },
         eventSlots: this.event?.slots,
-        volunteerName: assignment.volunteer.name // Pass the volunteer's name
+        volunteerName: assignment.volunteer.name
       }
     });
   
@@ -95,28 +99,24 @@ export class EventDetailsComponent implements OnInit {
   
     return await modal.present();
   }
-  
+
   async updateVolunteerAssignment(updatedAssignment: EventVolunteerAssignment) {
-    // Validation before update
     if (updatedAssignment.adminApprovalStatus === 'rejected' && !updatedAssignment.adminComment) {
       this.showAlert('Validation Error', 'Admin comment is required when rejecting an assignment.');
       return;
     }
-  
+
     if (updatedAssignment.slotsSelected.length === 0) {
       this.showAlert('Validation Error', 'At least one slot must be selected.');
       return;
     }
-  
+
     updatedAssignment.updatedAt = new Date().toISOString();
-  
+
     this.assignmentService.updateAssignment(updatedAssignment).subscribe(
       (updatedAssignmentFromService) => {
-        // Find the index of the updated assignment in the assignments array
         const index = this.assignments.findIndex(a => a.id === updatedAssignmentFromService.id);
-    
         if (index !== -1) {
-          // Update the assignment in the array
           this.assignments[index] = updatedAssignmentFromService;
         }
       },
@@ -126,14 +126,13 @@ export class EventDetailsComponent implements OnInit {
       }
     );
   }
-  
+
   async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
       message,
       buttons: ['OK']
     });
-  
     await alert.present();
   }
 
@@ -153,7 +152,7 @@ export class EventDetailsComponent implements OnInit {
   }
 
   get filteredAssignments() {
-    return this.assignments.filter(assignment => 
+    return this.assignments.filter(assignment =>
       (this.filterCenter === '' || assignment.center.name === this.filterCenter) &&
       (this.filterGender === '' || assignment.volunteer.gender === this.filterGender) &&
       (this.filterAdminStatus === '' || assignment.adminApprovalStatus === this.filterAdminStatus) &&
@@ -162,7 +161,28 @@ export class EventDetailsComponent implements OnInit {
     );
   }
 
-  // Fuzzy search method to match name formats
+  get paginatedAssignments() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredAssignments.slice(start, end);
+  }
+
+  nextPage() {
+    if (this.currentPage * this.itemsPerPage < this.filteredAssignments.length) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredAssignments.length / this.itemsPerPage);
+  }
+
   fuzzySearch(fullName: string, searchTerm: string): boolean {
     const nameParts = fullName.toLowerCase().split(' ');
     const searchParts = searchTerm.toLowerCase().split(' ');
@@ -175,5 +195,8 @@ export class EventDetailsComponent implements OnInit {
     this.filterAdminStatus = '';
     this.filterSlots = [];
     this.filterName = '';
+    this.currentPage = 1; // Reset pagination on filter reset
   }
+
+
 }

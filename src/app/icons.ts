@@ -32,6 +32,8 @@ import {
   logInOutline,
   personAddOutline,
   personAdd,
+  chevronBack,
+  chevronForward,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -63,6 +65,8 @@ export function registerIcons() {
     'calendar-number-sharp': calendarNumberSharp,
     'document-outline':documentOutline,
     'log-in':logIn,
-    'person-add': personAdd
+    'person-add': personAdd,
+    'chevron-back':chevronBack,
+    'chevron-forward':chevronForward
   });
 }

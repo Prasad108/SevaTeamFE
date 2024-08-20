@@ -50,7 +50,7 @@
   </ion-card>
 
 <!-- Actions Section: Refresh and Export -->
-<ion-card>
+<ion-card *ngIf="assignments.length > 0">
   <ion-card-header>
     <ion-card-title>Actions</ion-card-title>
   </ion-card-header>
@@ -76,7 +76,7 @@
 
 
 <!-- Filters Section -->
-<ion-card>
+<ion-card *ngIf="assignments.length > 0">
   <ion-card-header>
     <ion-card-title>Filters</ion-card-title>
   </ion-card-header>
@@ -144,14 +144,14 @@
 </ion-card>
 
 
-<!-- Volunteers Section -->
+<!-- Volunteers Section with Pagination -->
 <ion-card>
   <ion-card-header>
     <ion-card-title>Registered Volunteers</ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-list *ngIf="filteredAssignments.length > 0">
-      <ion-item *ngFor="let assignment of filteredAssignments | sort: 'volunteer.name'">
+    <ion-list *ngIf="assignments.length > 0">
+      <ion-item *ngFor="let assignment of paginatedAssignments | sort: 'volunteer.name'">
         <ion-label>
           <h2>{{ assignment.volunteer.name }}</h2>
           <p><strong>Phone:</strong> {{ assignment.volunteer.phoneNumber }}</p>
@@ -176,7 +176,37 @@
     <div *ngIf="filteredAssignments.length === 0">
       <p>No volunteers registered for this event.</p>
     </div>
+
+<!-- Pagination Controls -->
+<ion-footer *ngIf="assignments.length > 0">
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col size-lg="4" size-sm="12" class="ion-text-left ion-justify-content-end">
+          <ion-buttons>
+            <ion-button (click)="prevPage()" [disabled]="currentPage === 1">
+              <ion-icon name="chevron-back" slot="start"></ion-icon>
+              Previous
+            </ion-button>
+          </ion-buttons>
+        </ion-col>
+        <ion-col size-lg="4" size-sm="12" class="ion-text-center">
+          <ion-title>
+            Page {{ currentPage }} of {{ totalPages }} | Total Records: {{ filteredAssignments.length }}
+          </ion-title>
+        </ion-col>
+        <ion-col size-lg="4" size-sm="12" class="ion-text-right">
+          <ion-buttons>
+            <ion-button (click)="nextPage()" [disabled]="currentPage >= totalPages">
+              Next
+              <ion-icon name="chevron-forward" slot="end"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
   </ion-card-content>
 </ion-card>
-
 </ion-content>

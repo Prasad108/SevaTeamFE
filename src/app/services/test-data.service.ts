@@ -63,12 +63,12 @@ export class TestDataService {
           eventId: `JfoFbLBL0bDrQRocdiV4`, // Specified eventId
           center: center,
           poc: poc,
-          adminApprovalStatus: 'approved',
-          adminComment: '',
-          volunteerArrivalDate: null,
-          pocComment: '',
-          trainNumber: '',
-          slotsSelected: [],
+          adminApprovalStatus: this.getRandomStatus(),
+          adminComment: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          volunteerArrivalDate: new Date().toISOString(),
+          pocComment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas eu commodo lectus,',
+          trainNumber: '9875641230',
+          slotsSelected: this.generateRandomSlots(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -102,4 +102,64 @@ export class TestDataService {
 
     console.log('Test data deleted successfully and localStorage cleared.');
   }
+
+  private getRandomStatus(): 'approved' | 'rejected' | 'review-pending' | 'waiting' {
+    const statuses: ('approved' | 'rejected' | 'review-pending' | 'waiting')[] = ['approved', 'rejected', 'review-pending', 'waiting'];
+    return statuses[Math.floor(Math.random() * statuses.length)];
+  }
+
+  private generateRandomSlots(): string[] {
+    const allSlots = ['Slot-1', 'Slot-2', 'Slot-3', 'Slot-4', 'Slot-5'];
+    const selectedSlots: string[] = [];
+
+    // Randomly select between 1 to 5 slots
+    const numberOfSlots = Math.floor(Math.random() * allSlots.length) + 1;
+
+    while (selectedSlots.length < numberOfSlots) {
+      const randomSlot = allSlots[Math.floor(Math.random() * allSlots.length)];
+      if (!selectedSlots.includes(randomSlot)) {
+        selectedSlots.push(randomSlot);
+      }
+    }
+
+    return selectedSlots;
+  }
+
+  exportToFile() {
+    // Step 1: Read the data from local storage
+    const createdAssignmentIds = this.getFromLocalStorage('createdAssignmentIds');
+  
+    if (!createdAssignmentIds) {
+      console.error('No data found in local storage');
+      return;
+    }
+  
+    // Step 2: Convert the data to JSON
+    const dataToExport = JSON.stringify(createdAssignmentIds);
+  
+    // Step 3: Create a Blob and download
+    const blob = new Blob([dataToExport], { type: 'application/json' }); // For JSON
+  
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'createdAssignmentIds.json'; // Specify the file name
+  
+    // Trigger the download
+    document.body.appendChild(a);
+    a.click();
+  
+    // Clean up
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+  
+  // Assuming this is your method to get data from local storage
+  getFromLocalStorage(key: string): any {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+  
+  
+
 }
