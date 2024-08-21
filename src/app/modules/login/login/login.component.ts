@@ -3,14 +3,13 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, AngularFireAuthModule, RouterModule]
+  imports: [IonicModule, FormsModule, RouterModule]
 })
 export class LoginComponent {
   email = '';
@@ -20,7 +19,7 @@ export class LoginComponent {
     private router: Router, 
     private authService: AuthService, 
     private alertController: AlertController,
-    private loadingController: LoadingController // Inject LoadingController
+    private loadingController: LoadingController
   ) {}
 
   async login() {

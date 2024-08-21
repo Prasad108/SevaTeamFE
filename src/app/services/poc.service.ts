@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, CollectionReference, where, query, documentId, getDoc } from '@angular/fire/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
@@ -22,15 +22,13 @@ export interface POC {
 export class PocService {
   private pocsCollection: CollectionReference<POC>;
 
-  constructor(private firestore: Firestore,
-    private afAuth: AngularFireAuth,
-    private storageService : StorageService
+  constructor(
+    private firestore: Firestore,
+    private auth: Auth,  // Use the modular Auth service
+    private storageService: StorageService
   ) {
     this.pocsCollection = collection(this.firestore, 'pocs') as CollectionReference<POC>;
   }
-
-
-
 
   // Fetch all POCs
   getPocs(): Observable<POC[]> {
@@ -46,7 +44,7 @@ export class PocService {
 
   // Add a new POC with Firebase Authentication
   addPoc(poc: POC): Observable<void> {
-    return from(this.afAuth.createUserWithEmailAndPassword(poc.email, poc.initialPassword)).pipe(
+    return from(createUserWithEmailAndPassword(this.auth, poc.email, poc.initialPassword)).pipe(
       switchMap(userCredential => {
         const authId = userCredential.user?.uid;
         const pocWithAuthId = { ...poc, authId }; // Add authId to the POC object
@@ -115,7 +113,7 @@ export class PocService {
     );
   }
 
-      // Get POC by authId
+  // Get POC by authId
   getPocByAuthId(authId: string): Observable<POC | null> {
     const pocQuery = query(this.pocsCollection, where('authId', '==', authId));
     
@@ -129,6 +127,7 @@ export class PocService {
     );
   }
 
+  // Get POCs by their IDs
   getPocsByIds(pocIds: string[]): Observable<POC[]> {
     const q = query(this.pocsCollection, where(documentId(), 'in', pocIds));
     return from(getDocs(q)).pipe(
@@ -143,5 +142,4 @@ export class PocService {
       map(snapshot => snapshot.exists() ? { pocId: snapshot.id, ...snapshot.data() } as POC : undefined)
     );
   }
-  
 }

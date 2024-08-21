@@ -65,6 +65,8 @@ export class CenterService {
       })
     );
   }
+
+  // Fetch centers by their IDs
   getCentersByIds(centerIds: string[]): Observable<Center[]> {
     const q = query(this.centersCollection, where(documentId(), 'in', centerIds));
     return from(getDocs(q)).pipe(

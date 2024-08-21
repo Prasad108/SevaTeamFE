@@ -1,8 +1,5 @@
-import { importProvidersFrom } from '@angular/core';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 export const firebaseConfig = {
@@ -19,5 +16,4 @@ export const initializeFirebase = [
   provideFirebaseApp(() => initializeApp(firebaseConfig)),
   provideAuth(() => getAuth()),
   provideFirestore(() => getFirestore()),
-  importProvidersFrom(AngularFireModule.initializeApp(firebaseConfig)),
 ];
