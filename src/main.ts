@@ -7,6 +7,7 @@ import { initializeFirebase } from './firebase-config';
 import { registerIcons } from './app/icons';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
 
 registerIcons();
 
@@ -16,6 +17,8 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    importProvidersFrom(IonicModule.forRoot({})), 
+    importProvidersFrom(IonicModule.forRoot({})),
+    ScreenTrackingService,   // Optional: For automatic screen tracking
+    UserTrackingService,     // Optional: For user interaction tracking
   ],
 });
