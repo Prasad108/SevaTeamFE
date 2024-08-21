@@ -32,9 +32,7 @@
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
-            "scripts": [
-                          "node_modules/file-saver/dist/FileSaver.min.js"
-                        ]
+            "scripts": []
           },
           "configurations": {
             "production": {

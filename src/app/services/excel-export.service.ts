@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx-js-style';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Event, Slot } from './event.service';
 import { EventVolunteerAssignment } from './event-volunteer-assignment.service';
 
@@ -9,7 +8,8 @@ import { EventVolunteerAssignment } from './event-volunteer-assignment.service';
 })
 export class ExcelExportService {
 
-  exportEventDetailsToExcel(event: Event, assignments: EventVolunteerAssignment[]): void {
+  async exportEventDetailsToExcel(event: Event, assignments: EventVolunteerAssignment[]): Promise<void> {
+    const XLSX = await import('xlsx-js-style');
     const workbook = XLSX.utils.book_new();
 
     // Event Details Sheet
