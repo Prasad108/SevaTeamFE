@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Event as EventModel, EventService } from '../../../../services/event.service';
 import { EventVolunteerAssignmentService, EventVolunteerAssignment } from '../../../../services/event-volunteer-assignment.service';
 import { AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { EditVolunteerModalComponent } from './edit-volunteer-modal/edit-volunteer-modal.component';
 import { ExcelExportService } from 'src/app/services/excel-export.service';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 
 @Component({
   selector: 'app-event-details',
@@ -12,6 +13,8 @@ import { ExcelExportService } from 'src/app/services/excel-export.service';
   styleUrls: ['./event-details.component.scss']
 })
 export class EventDetailsComponent implements OnInit {
+  private analytics = inject(Analytics);
+
   event: EventModel | null = null;
   assignments: EventVolunteerAssignment[] = [];
 
@@ -146,6 +149,8 @@ export class EventDetailsComponent implements OnInit {
   exportToExcel() {
     if (this.event && this.assignments.length > 0) {
       this.excelExportService.exportEventDetailsToExcel(this.event, this.assignments);
+      logEvent(this.analytics, 'ExportToExcel',{'eventName':this.event.name});
+
     } else {
       this.showAlert('Export Error', 'There is no data available to export.');
     }

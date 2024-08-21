@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Router } from '@angular/router';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { TestDataService } from 'src/app/services/test-data.service';
@@ -12,12 +13,14 @@ import { TestDataService } from 'src/app/services/test-data.service';
   imports: [CommonModule, IonicModule],
 })
 export class HomeComponent {
+  private analytics = inject(Analytics);
 
   constructor(
     private router: Router,
     private testDataService: TestDataService,
     private loadingController: LoadingController
   ) {
+    logEvent(this.analytics, 'Home page constructor');
   }
 
   async generateTestData() {
@@ -49,10 +52,13 @@ export class HomeComponent {
   }
 
   navigateToLogin() {
+    logEvent(this.analytics, 'User went to login page');
     this.router.navigate(['/login']);
   }
 
   navigateToVolunteerRegistration() {
+    logEvent(this.analytics, 'User went to volunteer-registration page');
+
     this.router.navigate(['/volunteer-registration']);
   }
 }
