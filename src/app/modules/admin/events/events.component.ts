@@ -33,6 +33,8 @@ export class EventsComponent implements OnInit {
   editMode = false;
   selectedEventId: string | null = null;
   isModalOpen = false;
+  today = new Date().toISOString(); 
+
 
   constructor(
     private eventService: EventService,

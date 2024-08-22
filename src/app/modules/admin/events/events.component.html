@@ -103,6 +103,8 @@
               [(ngModel)]="newEvent.registrationStartDate"
               name="registrationStartDate"
               required
+              [min]="today"
+              [max]="newEvent.endDate"
             ></ion-datetime>
           </ion-item>
           <ion-item>
@@ -112,6 +114,8 @@
               [(ngModel)]="newEvent.registrationEndDate"
               name="registrationEndDate"
               required
+              [min]="today"
+              [max]="newEvent.endDate"
             ></ion-datetime>
           </ion-item>
           <ion-item>

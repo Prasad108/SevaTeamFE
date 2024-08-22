@@ -101,10 +101,10 @@ export class ExcelExportService {
       { wch: 30 }, // POC Comment
       { wch: 15 }, // Admin Status
       { wch: 30 }, // Admin Comment
-      { wch: 20 }, // Volunteer Arrival Date
+      { wch: 25 }, // Volunteer Arrival Date
       { wch: 20 }, // Train Number
       { wch: 25 }, // Slots Selected
-      { wch: 20 }  // Registered On
+      { wch: 25 }  // Registered On
     ];
 
     volunteerData.forEach((row, rowIndex) => {
