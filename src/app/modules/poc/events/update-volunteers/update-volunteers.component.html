@@ -19,34 +19,10 @@
   </ion-breadcrumb>
 </ion-breadcrumbs>
 
-<ion-content class="ion-padding">
+<ion-content >
+  <!-- Display event details using the standalone component -->
+  <app-display-event-details [event]="selectedEvent"></app-display-event-details>
 
-  <!-- Event Details Section -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ selectedEvent?.name }}</ion-card-title>
-      <ion-card-subtitle>{{ selectedEvent?.startDate | date }} - {{ selectedEvent?.endDate | date }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Description:</strong> {{ selectedEvent?.description }}</p>
-      <p><strong>Registration Period:</strong> {{ selectedEvent?.registrationStartDate | date: 'mediumDate' }} - {{ selectedEvent?.registrationEndDate | date: 'mediumDate' }}</p>
-      <p><strong>Location:</strong> {{ selectedEvent?.locationDetails }}</p>
-      <p><strong>Event Manager:</strong> {{ selectedEvent?.eventManagerName }} ({{ selectedEvent?.eventManagerContactNumber }})</p>
-      <p><strong>Email:</strong> {{ selectedEvent?.eventManagerEmailId }}</p>
-
-      <div *ngIf="selectedEvent?.slots?.length">
-        <h4>Slots</h4>
-        <ul>
-          <li *ngFor="let slot of selectedEvent?.slots">
-            {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
-          </li>
-        </ul>
-      </div>
-      <div *ngIf="!selectedEvent?.slots?.length">
-        <p>No slots available for this event.</p>
-      </div>
-    </ion-card-content>
-  </ion-card>
 
   <!-- Registration Start in Future -->
   <ion-card *ngIf="isRegistrationFuture">

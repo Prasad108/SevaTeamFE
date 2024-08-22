@@ -25,29 +25,9 @@
         <ion-button expand="full" color="primary" (click)="openEventModal()">
           Add New Event
         </ion-button>
-
         <ion-list>
           <ion-item-group *ngFor="let event of events | sort: 'startDate'">
-            <ion-item lines="full">
-              <ion-label>
-                <h2>{{ event.name }}</h2>
-                <p><strong>Start Date:</strong> {{ event.startDate | date: 'MMM d, yyyy' }}</p>
-                <p><strong>End Date:</strong> {{ event.endDate | date: 'MMM d, yyyy' }}</p>
-                <p><strong>Description:</strong> {{ event.description }}</p>
-                <p><strong>Registration:</strong> {{ event.registrationStartDate | date }} - {{ event.registrationEndDate | date }}</p>
-                <p><strong>Location:</strong> {{ event.locationDetails }}</p>
-                <p><strong>Event Manager:</strong> {{ event.eventManagerName }} ({{ event.eventManagerContactNumber }})</p>
-                <p><strong>Email:</strong> {{ event.eventManagerEmailId }}</p>
-                <div *ngIf="event.slots && event.slots.length">
-                  <p><strong>Slots:</strong></p>
-                  <ul>
-                    <li *ngFor="let slot of event.slots">
-                      {{ slot.slotId }}: {{ slot.startDate | date:'mediumDate'}} - {{ slot.endDate | date:'mediumDate'}}
-                    </li>
-                  </ul>
-                </div>
-              </ion-label>
-            </ion-item>
+            <app-display-event-details [event]="event"></app-display-event-details>
             <ion-item lines="none">
               <ion-grid>
                 <ion-row>

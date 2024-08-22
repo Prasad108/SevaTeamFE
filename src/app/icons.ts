@@ -42,6 +42,7 @@ import {
   timeOutline,
   time,
   createOutline,
+  mail,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -83,5 +84,7 @@ export function registerIcons() {
     'male-female':maleFemale,
     'clock':time,
     'create-outline':createOutline,
+    'time': time,
+    'mail': mail,
   });
 }

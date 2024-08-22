@@ -23,31 +23,8 @@
 </ion-breadcrumbs>
 
 <ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ event?.name }}</ion-card-title>
-      <ion-card-subtitle>{{ event?.startDate | date }} - {{ event?.endDate | date }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Description:</strong> {{ event?.description }}</p>
-      <p><strong>Registration Period:</strong> {{ event?.registrationStartDate | date: 'mediumDate' }} - {{ event?.registrationEndDate | date: 'mediumDate' }}</p>
-      <p><strong>Location:</strong> {{ event?.locationDetails }}</p>
-      <p><strong>Event Manager:</strong> {{ event?.eventManagerName }} ({{ event?.eventManagerContactNumber }})</p>
-      <p><strong>Email:</strong> {{ event?.eventManagerEmailId }}</p>
+  <app-display-event-details [event]="event"></app-display-event-details>
 
-      <div *ngIf="event?.slots?.length">
-        <h4>Slots</h4>
-        <ul>
-          <li *ngFor="let slot of event?.slots">
-            {{ slot.slotId }}: {{ slot.startDate | date }} - {{ slot.endDate | date }}
-          </li>
-        </ul>
-      </div>
-      <div *ngIf="!event?.slots?.length">
-        <p>No slots available for this event.</p>
-      </div>
-    </ion-card-content>
-  </ion-card>
 
 <!-- Actions Section: Refresh and Export -->
 <ion-card *ngIf="assignments.length > 0">

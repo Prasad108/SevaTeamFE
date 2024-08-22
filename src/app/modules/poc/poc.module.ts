@@ -11,6 +11,7 @@ import { ApproveVolunteersComponent } from './approve-volunteers/approve-volunte
 import { UpdateVolunteersComponent } from './events/update-volunteers/update-volunteers.component';
 import { LoadingController } from '@ionic/angular';
 import { SortPipe } from 'src/app/pipe/sort.pipe';
+import { DisplayEventDetailsComponent } from 'src/app/shared/display-event-details/display-event-details.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { SortPipe } from 'src/app/pipe/sort.pipe';
     PocRoutingModule,
     IonicModule,
     FormsModule,
-    SortPipe
+    SortPipe,
+    DisplayEventDetailsComponent
   ],
   providers: [LoadingController],
 

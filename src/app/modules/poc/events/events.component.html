@@ -25,40 +25,18 @@
   <ion-grid>
     <ion-row>
       <ion-col size="12">
-        <ion-card *ngFor="let event of events | sort: 'startDate'">
-          <ion-card-header>
-            <ion-card-title>{{ event.name }}</ion-card-title>
-            <ion-card-subtitle>
-              {{ event.startDate | date: 'mediumDate' }} - {{ event.endDate | date: 'mediumDate' }}
-            </ion-card-subtitle>
-          </ion-card-header>
-          <ion-card-content>
-            <p><strong>Description:</strong> {{ event.description }}</p>
-            <p><strong>Registration Period:</strong> {{ event.registrationStartDate | date: 'mediumDate' }} - {{ event.registrationEndDate | date: 'mediumDate' }}</p>
-            <p><strong>Location:</strong> {{ event.locationDetails }}</p>
-            <p><strong>Event Manager:</strong> {{ event.eventManagerName }} ({{ event.eventManagerContactNumber }})</p>
-            <p><strong>Email:</strong> {{ event.eventManagerEmailId }}</p>
-            
-            <!-- Display Slots if they exist -->
-            <ion-list *ngIf="event.slots && event.slots.length > 0">
-              <ion-list-header>
-                <ion-label>Event Slots</ion-label>
-              </ion-list-header>
-              <ion-item *ngFor="let slot of event.slots">
-                <ion-label>
-                  <h3>Slot {{ slot.slotId }}</h3>
-                  <p>{{ slot.startDate | date: 'mediumDate' }} - {{ slot.endDate | date: 'mediumDate' }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-
-            <ion-item lines="none">
-              <ion-button color="primary" expand="full" (click)="updateVolunteersForEvent(event)">
-                Update Volunteer Details
-              </ion-button>
-            </ion-item>
-          </ion-card-content>
-        </ion-card>
+        <!-- Loop through events and use DisplayEventDetailsComponent -->
+        <ng-container *ngFor="let event of events | sort: 'startDate'">
+          <!-- Display event details using the standalone component -->
+          <app-display-event-details [event]="event"></app-display-event-details>
+          
+          <!-- Button to update volunteers for the selected event -->
+          <ion-item lines="none">
+            <ion-button color="primary" expand="full" (click)="updateVolunteersForEvent(event)">
+              Update Volunteer Details
+            </ion-button>
+          </ion-item>
+        </ng-container>
       </ion-col>
     </ion-row>
   </ion-grid>

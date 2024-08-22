@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { SortPipe } from 'src/app/pipe/sort.pipe';
 import { EventDetailsComponent } from './events/event-details/event-details.component';
 import { EditVolunteerModalComponent } from './events/event-details/edit-volunteer-modal/edit-volunteer-modal.component';
+import { DisplayEventDetailsComponent } from 'src/app/shared/display-event-details/display-event-details.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { EditVolunteerModalComponent } from './events/event-details/edit-volunte
     FormsModule,
     AdminRoutingModule,
     SortPipe,
+    DisplayEventDetailsComponent
   ]
 })
 export class AdminModule {}

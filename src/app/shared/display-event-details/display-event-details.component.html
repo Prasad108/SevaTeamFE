@@ -1,0 +1,116 @@
+<ion-card *ngIf="event">
+  <ion-card-header>
+    <ion-card-title><strong>{{ event.name }}</strong></ion-card-title>
+    <ion-icon name="calendar" slot="end"></ion-icon>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list lines="none">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-icon name="time" slot="start"></ion-icon>
+              <ion-label>
+                <strong>Start Date:</strong> {{ event.startDate | date: 'MMM d, yyyy' }}
+              </ion-label>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-icon name="time" slot="start"></ion-icon>
+              <ion-label>
+                <strong>End Date:</strong> {{ event.endDate | date: 'MMM d, yyyy' }}
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
+      <!-- Description -->
+      <ion-row>
+        <ion-col size="12">
+          <ion-item>
+            <ion-icon name="document" slot="start"></ion-icon>
+            <ion-label>
+              <strong>Description:</strong> {{ event.description }}
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- Registration Dates -->
+      <ion-row>
+        <ion-col size="12">
+          <ion-item>
+            <ion-icon name="calendar" slot="start"></ion-icon>
+            <ion-label>
+              <strong>Registration:</strong> {{ event.registrationStartDate | date }} - {{ event.registrationEndDate | date }}
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- Location -->
+      <ion-row>
+        <ion-col size="12">
+          <ion-item>
+            <ion-icon name="location" slot="start"></ion-icon>
+            <ion-label>
+              <strong>Location:</strong> {{ event.locationDetails }}
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- Event Manager and Email in a responsive grid -->
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-icon name="person" slot="start"></ion-icon>
+              <ion-label>
+                <strong>Event Manager:</strong> {{ event.eventManagerName }} ({{ event.eventManagerContactNumber }})
+              </ion-label>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-icon name="mail" slot="start"></ion-icon>
+              <ion-label>
+                <strong>Email:</strong> {{ event.eventManagerEmailId }}
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Slots -->
+      <ion-grid *ngIf="event.slots && event.slots.length">
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-item>
+              <ion-icon name="clock" slot="start"></ion-icon>
+              <ion-label>
+                <strong>Slots:</strong>
+              </ion-label>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="8">
+            <ion-list>
+              <ion-item *ngFor="let slot of event.slots">
+                {{ slot.slotId }}: {{ slot.startDate | date:'mediumDate'}} - {{ slot.endDate | date:'mediumDate'}}
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
+    </ion-list>
+  </ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="!event">
+  <ion-card-header>
+    <ion-card-title>No event details available</ion-card-title>
+  </ion-card-header>
+</ion-card>
