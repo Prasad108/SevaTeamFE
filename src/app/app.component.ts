@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { AnalyticsService } from './services/analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -9,11 +8,10 @@ import { AnalyticsService } from './services/analytics.service';
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
-  constructor(private analyticsService: AnalyticsService) {
+  constructor() {
     this.logAppStart();
   }
 
   private logAppStart() {
-    this.analyticsService.logCustomEvent('app_start');
   }
 }

@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import { CenterService } from '../../../services/center.service';
 import { Center } from '../../../services/center.service';
-import { ConfirmationDialogService } from '../../../services/confirmation-dialog.service'; // Import the service
+import { ConfirmationDialogService } from '../../../services/confirmation-dialog.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-centers',
@@ -21,7 +22,8 @@ export class CentersComponent implements OnInit {
   constructor(
     private centerService: CenterService,
     private alertController: AlertController,
-    private confirmationDialogService: ConfirmationDialogService // Inject the service
+    private confirmationDialogService: ConfirmationDialogService,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {
@@ -32,9 +34,11 @@ export class CentersComponent implements OnInit {
     this.centerService.getCenters().subscribe(
       (centers) => {
         this.centers = centers;
+        this.analyticsService.logCustomEvent('admin_fetch_centers_success');
       },
       (error) => {
         console.error('Error fetching centers:', error);
+        this.analyticsService.logCustomEvent('admin_fetch_centers_error', { error: error.message });
         this.showAlert('Error', 'Failed to load centers.');
       }
     );
@@ -49,6 +53,7 @@ export class CentersComponent implements OnInit {
     this.centerService.addCenter(this.newCenter).subscribe(() => {
       this.fetchCenters();
       this.closeCenterModal();
+      this.analyticsService.logCustomEvent('admin_center_added', { centerName: this.newCenter.name });
     });
   }
 
@@ -57,6 +62,7 @@ export class CentersComponent implements OnInit {
     this.selectedCenterId = center.centerId!;
     this.newCenter = { ...center };
     this.openCenterModal();
+    this.analyticsService.logCustomEvent('admin_edit_center', { centerId: this.selectedCenterId });
   }
 
   updateCenter() {
@@ -70,6 +76,7 @@ export class CentersComponent implements OnInit {
       this.centerService.updateCenter(updatedCenter).subscribe(() => {
         this.fetchCenters();
         this.closeCenterModal();
+        this.analyticsService.logCustomEvent('admin_center_updated', { centerId: this.selectedCenterId });
       });
     } else {
       this.showAlert('Error', 'No center selected for update.');
@@ -77,13 +84,15 @@ export class CentersComponent implements OnInit {
   }
 
   async deleteCenter(centerId: string) {
-    const confirmed = await this.confirmationDialogService.confirmDelete(); // Use the service
+    const confirmed = await this.confirmationDialogService.confirmDelete();
     if (confirmed) {
       try {
         await this.centerService.deleteCenter(centerId);
         this.centers = this.centers.filter((center) => center.centerId !== centerId);
+        this.analyticsService.logCustomEvent('admin_center_deleted', { centerId });
       } catch (error) {
         console.error('Error deleting center:', error);
+        this.analyticsService.logCustomEvent('admin_center_delete_error', { error: error, centerId }); 
         this.showAlert('Error', 'Failed to delete center.');
       }
     }
@@ -94,6 +103,7 @@ export class CentersComponent implements OnInit {
     this.selectedCenterId = null;
     this.resetNewCenter();
     this.closeCenterModal();
+    this.analyticsService.logCustomEvent('admin_edit_cancelled');
   }
 
   openCenterModal() {

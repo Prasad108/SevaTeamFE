@@ -1,11 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Event as EventModel, EventService } from '../../../../services/event.service';
 import { EventVolunteerAssignmentService, EventVolunteerAssignment } from '../../../../services/event-volunteer-assignment.service';
 import { AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { EditVolunteerModalComponent } from './edit-volunteer-modal/edit-volunteer-modal.component';
 import { ExcelExportService } from 'src/app/services/excel-export.service';
-import { Analytics, logEvent } from '@angular/fire/analytics';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-event-details',
@@ -13,7 +13,6 @@ import { Analytics, logEvent } from '@angular/fire/analytics';
   styleUrls: ['./event-details.component.scss']
 })
 export class EventDetailsComponent implements OnInit {
-  private analytics = inject(Analytics);
 
   event: EventModel | null = null;
   assignments: EventVolunteerAssignment[] = [];
@@ -27,7 +26,7 @@ export class EventDetailsComponent implements OnInit {
 
   // Pagination properties
   currentPage: number = 1;
-  itemsPerPage: number = 10; // Adjust this number to control how many items per page
+  itemsPerPage: number = 10;
 
   constructor(
     private eventService: EventService,
@@ -37,11 +36,13 @@ export class EventDetailsComponent implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private excelExportService: ExcelExportService,
+    private analyticsService: AnalyticsService // Inject your AnalyticsService
   ) {}
 
   ngOnInit() {
     const eventId = this.route.snapshot.paramMap.get('eventId');
     if (eventId) {
+      this.analyticsService.logCustomEvent('admin_event_details_viewed', { eventId });
       this.fetchEventDetails(eventId);
       this.fetchVolunteerAssignments(eventId);
     }
@@ -57,10 +58,12 @@ export class EventDetailsComponent implements OnInit {
       async (event) => {
         this.event = event;
         await loading.dismiss();
+        this.analyticsService.logCustomEvent('admin_event_details_fetched', { eventId });
       },
       async (error) => {
         console.error('Error fetching event details:', error);
         await loading.dismiss();
+        this.analyticsService.logCustomEvent('admin_event_details_fetch_error', { eventId, error: error.message });
       }
     );
   }
@@ -76,10 +79,12 @@ export class EventDetailsComponent implements OnInit {
         this.assignments = assignments;
         this.centers = Array.from(new Set(assignments.map(a => a.center?.name).filter(name => name)));
         loading.dismiss();
+        this.analyticsService.logCustomEvent('admin_volunteer_assignments_fetched', { eventId, assignmentCount: assignments.length });
       },
       (error) => {
         console.error('Error fetching volunteer assignments:', error);
         loading.dismiss();
+        this.analyticsService.logCustomEvent('admin_volunteer_assignments_fetch_error', { eventId, error: error.message });
       }
     );
   }
@@ -100,7 +105,8 @@ export class EventDetailsComponent implements OnInit {
       }
     });
   
-    return await modal.present();
+    await modal.present();
+    this.analyticsService.logCustomEvent('admin_edit_volunteer_modal_opened', { assignmentId: assignment.id });
   }
 
   async updateVolunteerAssignment(updatedAssignment: EventVolunteerAssignment) {
@@ -122,9 +128,11 @@ export class EventDetailsComponent implements OnInit {
         if (index !== -1) {
           this.assignments[index] = updatedAssignmentFromService;
         }
+        this.analyticsService.logCustomEvent('admin_volunteer_assignment_updated', { assignmentId: updatedAssignment.id });
       },
       (error) => {
         console.error('Error updating volunteer assignment:', error);
+        this.analyticsService.logCustomEvent('admin_volunteer_assignment_update_error', { assignmentId: updatedAssignment.id, error: error.message });
         this.showAlert('Error', 'Failed to update volunteer assignment.');
       }
     );
@@ -149,8 +157,7 @@ export class EventDetailsComponent implements OnInit {
   exportToExcel() {
     if (this.event && this.assignments.length > 0) {
       this.excelExportService.exportEventDetailsToExcel(this.event, this.assignments);
-      logEvent(this.analytics, 'ExportToExcel',{'eventName':this.event.name});
-
+      this.analyticsService.logCustomEvent('admin_export_to_excel', { eventName: this.event.name });
     } else {
       this.showAlert('Export Error', 'There is no data available to export.');
     }
@@ -202,6 +209,4 @@ export class EventDetailsComponent implements OnInit {
     this.filterName = '';
     this.currentPage = 1; // Reset pagination on filter reset
   }
-
-
 }

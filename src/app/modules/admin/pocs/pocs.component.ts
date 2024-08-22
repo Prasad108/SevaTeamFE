@@ -3,6 +3,7 @@ import { AlertController, IonModal, LoadingController } from '@ionic/angular';
 import { PocService, POC } from '../../../services/poc.service';
 import { Center, CenterService } from 'src/app/services/center.service';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-pocs',
@@ -14,7 +15,7 @@ export class PocsComponent implements OnInit {
 
   pocs: POC[] = [];
   centers: Center[] = [];
-  showPassword = false; // Track password visibility
+  showPassword = false;
 
   newPoc: POC = { name: '', email: '', phoneNumber: '', initialPassword: '', centerId: '', role: 'poc' };
   editMode = false;
@@ -26,11 +27,12 @@ export class PocsComponent implements OnInit {
     private centerService: CenterService,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private confirmationDialogService: ConfirmationDialogService // Inject the service
+    private confirmationDialogService: ConfirmationDialogService,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {
-    this.fetchPocs();
+    this.analyticsService.logCustomEvent('admin_pocs_component_viewed');
     this.fetchCenters();
   }
 
@@ -48,10 +50,12 @@ export class PocsComponent implements OnInit {
       (centers) => {
         this.centers = centers;
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_centers_fetched', { centerCount: centers.length });
       },
       (error) => {
         console.error('Error fetching centers:', error);
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_centers_fetch_error', { error: error.message });
         this.showAlert('Error', 'Failed to load centers.');
       }
     );
@@ -63,10 +67,12 @@ export class PocsComponent implements OnInit {
       (pocs: POC[]) => {
         this.pocs = pocs;
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_pocs_fetched', { pocCount: pocs.length });
       },
       (error) => {
         console.error('Error fetching POCs:', error);
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_pocs_fetch_error', { error: error.message });
         this.showAlert('Error', 'Failed to load POCs.');
       }
     );
@@ -83,9 +89,11 @@ export class PocsComponent implements OnInit {
       this.fetchPocs();
       this.closePocModal();
       loading.dismiss(); // Dismiss loading indicator
+      this.analyticsService.logCustomEvent('admin_poc_added', { pocName: this.newPoc.name });
     }, error => {
       console.error('Error creating POC:', error);
       loading.dismiss(); // Dismiss loading indicator
+      this.analyticsService.logCustomEvent('admin_poc_add_error', { error: error.message });
       this.showAlert('Error', 'Failed to create POC. Please try again or use different values.');
     });
   }
@@ -95,6 +103,7 @@ export class PocsComponent implements OnInit {
     this.selectedPocId = poc.pocId!;
     this.newPoc = { ...poc };
     this.openPocModal();
+    this.analyticsService.logCustomEvent('admin_poc_edit_initiated', { pocId: poc.pocId });
   }
 
   async updatePoc() {
@@ -110,9 +119,11 @@ export class PocsComponent implements OnInit {
         this.fetchPocs();
         this.closePocModal();
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_poc_updated', { pocId: this.selectedPocId });
       }, error => {
         console.error('Error updating POC:', error);
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_poc_update_error', { pocId: this.selectedPocId, error: error.message }); // Log error during POC update
         this.showAlert('Error', 'Failed to update POC. Please try again.');
       });
     } else {
@@ -128,9 +139,11 @@ export class PocsComponent implements OnInit {
       this.pocService.deletePoc(pocId).subscribe(() => {
         this.fetchPocs();
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_poc_deleted', { pocId }); // Log POC deleted
       }, error => {
         console.error('Error deleting POC:', error);
         loading.dismiss(); // Dismiss loading indicator
+        this.analyticsService.logCustomEvent('admin_poc_delete_error', { pocId, error: error.message }); // Log error during POC deletion
         this.showAlert('Error', 'Failed to delete POC.');
       });
     }
@@ -141,15 +154,18 @@ export class PocsComponent implements OnInit {
     this.selectedPocId = null;
     this.resetNewPoc();
     this.closePocModal();
+    this.analyticsService.logCustomEvent('admin_poc_edit_cancelled');
   }
 
   openPocModal() {
     this.isModalOpen = true;
+    this.analyticsService.logCustomEvent('admin_poc_modal_opened');
   }
 
   closePocModal() {
     this.isModalOpen = false;
     this.resetNewPoc();
+    this.analyticsService.logCustomEvent('admin_poc_modal_closed');
   }
 
   onModalDidDismiss() {

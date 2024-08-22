@@ -3,6 +3,7 @@ import { Event, Slot } from '../../../services/event.service';
 import { EventService } from '../../../services/event.service';
 import { AlertController, IonModal } from '@ionic/angular';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
+import { AnalyticsService } from 'src/app/services/analytics.service';  // Import the AnalyticsService
 
 @Component({
   selector: 'app-events',
@@ -36,8 +37,8 @@ export class EventsComponent implements OnInit {
   constructor(
     private eventService: EventService,
     private alertController: AlertController,
-    private confirmationDialogService: ConfirmationDialogService
-
+    private confirmationDialogService: ConfirmationDialogService,
+    private analyticsService: AnalyticsService  // Inject the AnalyticsService
   ) {
     this.resetNewEvent();
   }
@@ -68,9 +69,11 @@ export class EventsComponent implements OnInit {
     this.eventService.getEvents().subscribe(
       (events) => {
         this.events = events;
+        this.analyticsService.logCustomEvent('admin_fetch_events_success');  // Log fetch events success
       },
       (error) => {
         console.error('Error fetching events:', error);
+        this.analyticsService.logCustomEvent('admin_fetch_events_error', { error: error.message });  // Log fetch events error
         this.showAlert('Error', 'Failed to load events.');
       }
     );
@@ -88,10 +91,12 @@ export class EventsComponent implements OnInit {
 
     this.newSlot = { slotId: '', startDate: '', endDate: '' }; // Reset slot fields
     this.showAlert('Success', 'Slot added successfully!');
+    this.analyticsService.logCustomEvent('admin_slot_added', { slotId });  // Log slot added
   }
 
   removeSlot(index: number) {
     this.newEvent.slots?.splice(index, 1);
+    this.analyticsService.logCustomEvent('admin_slot_removed', { index });  // Log slot removed
   }
 
   onEventDateChange() {
@@ -107,6 +112,7 @@ export class EventsComponent implements OnInit {
     this.eventService.addEvent(this.newEvent).subscribe(() => {
       this.fetchEvents();
       this.closeEventModal();
+      this.analyticsService.logCustomEvent('admin_event_added', { eventName: this.newEvent.name });  // Log event added
     });
   }
 
@@ -197,6 +203,7 @@ export class EventsComponent implements OnInit {
       this.eventService.updateEvent(updatedEvent).subscribe(() => {
         this.fetchEvents();
         this.closeEventModal();
+        this.analyticsService.logCustomEvent('admin_event_updated', { eventId: this.selectedEventId });  // Log event updated
       });
     }
   }
@@ -208,8 +215,10 @@ export class EventsComponent implements OnInit {
       try {
         await this.eventService.deleteEvent(eventId);
         this.events = this.events.filter((event) => event.eventId !== eventId);
+        this.analyticsService.logCustomEvent('admin_event_deleted', { eventId });  // Log event deleted
       } catch (error) {
         console.error('Error deleting event:', error);
+        this.analyticsService.logCustomEvent('admin_event_delete_error', { error: error, eventId });  // Log event delete error
         this.showAlert('Error', 'Failed to delete event.');
       }
     }
@@ -224,6 +233,7 @@ export class EventsComponent implements OnInit {
 
     await alert.present();
   }
+
   getModalStyles() {
     if (window.innerWidth >= 768) { // Desktop breakpoint
       return {
