@@ -38,7 +38,7 @@
       <ion-list>
         <ion-item *ngFor="let slot of eventSlots">
           <ion-checkbox [(ngModel)]="selectedSlots[slot.slotId]"></ion-checkbox>
-          <ion-text wrap="off">&nbsp;&nbsp;{{slot.slotId}}: {{ slot.startDate | date }} - {{ slot.endDate | date }}</ion-text>
+          <ion-text wrap="off">&nbsp;&nbsp;{{slot.slotId}} {{ slot.startDate | date }} - {{ slot.endDate | date }}</ion-text>
         </ion-item>
       </ion-list>
     </ion-item>

@@ -41,6 +41,7 @@ import {
   maleFemale,
   timeOutline,
   time,
+  createOutline,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -80,6 +81,7 @@ export function registerIcons() {
     'train': train,
     'checkmark':checkmark,
     'male-female':maleFemale,
-    'clock':time
+    'clock':time,
+    'create-outline':createOutline,
   });
 }
