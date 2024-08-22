@@ -34,6 +34,7 @@ export class PocsComponent implements OnInit {
   ngOnInit() {
     this.analyticsService.logCustomEvent('admin_pocs_component_viewed');
     this.fetchCenters();
+    this.fetchPocs();
   }
 
   async presentLoading(message: string) {

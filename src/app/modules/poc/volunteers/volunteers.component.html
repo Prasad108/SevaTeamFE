@@ -24,7 +24,7 @@
 
 <ion-content class="ion-padding">
   <!-- List of Volunteers -->
-  <ion-list>
+  <ion-list *ngIf="volunteers.length > 0; else noVolunteers">
     <ion-item-group *ngFor="let volunteer of volunteers">
       <ion-item lines="full">
         <ion-label>
@@ -33,19 +33,25 @@
           <p>Gender: {{ volunteer.gender }}</p>
           <p>Age: {{ volunteer.age }}</p>
           <p>Status: {{ volunteer.status }}</p>
+          <p *ngIf="volunteer.counselorDetails">Counselor Details: {{ volunteer.counselorDetails }}</p>
         </ion-label>
         <!-- Edit and Delete Buttons -->
-        <ion-buttons slot="end" class="action-buttons">
-          <ion-button color="secondary" (click)="editVolunteer(volunteer)"  size="small">
+        <ion-buttons slot="end" >
+          <ion-button slot="end" size="default" color="tertiary" (click)="editVolunteer(volunteer)">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
             Edit
-          </ion-button>
-          <ion-button color="danger" (click)="deleteVolunteer(volunteer.volunteerId!)"  size="small">
-            Delete
           </ion-button>
         </ion-buttons>
       </ion-item>
     </ion-item-group>
   </ion-list>
+
+  <!-- No Volunteers Message -->
+  <ng-template #noVolunteers>
+    <ion-label class="ion-text-center">
+      <h2>No volunteers present</h2>
+    </ion-label>
+  </ng-template>
 
   <!-- Add/Edit Volunteer Form Modal -->
   <ion-modal [isOpen]="showVolunteerModal" (didDismiss)="closeVolunteerModal()">

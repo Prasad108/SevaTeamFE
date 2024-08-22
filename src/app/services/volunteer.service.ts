@@ -12,6 +12,7 @@ export interface Volunteer {
   age: number;
   status: 'pending' | 'approved' | 'rejected';
   centerId: string; // Reference to centers/{centerId}
+  counselorDetails?: string;
 
 }
 

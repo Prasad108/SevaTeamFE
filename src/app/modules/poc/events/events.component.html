@@ -29,13 +29,13 @@
         <ng-container *ngFor="let event of events | sort: 'startDate'">
           <!-- Display event details using the standalone component -->
           <app-display-event-details [event]="event"></app-display-event-details>
-          
-          <!-- Button to update volunteers for the selected event -->
-          <ion-item lines="none">
-            <ion-button color="primary" expand="full" (click)="updateVolunteersForEvent(event)">
-              Update Volunteer Details
-            </ion-button>
-          </ion-item>
+
+        <!-- Button to update volunteers for the selected event -->
+        <ion-item lines="none">
+          <ion-button color="primary" expand="full" (click)="updateVolunteersForEvent(event)">
+            Update Volunteer Details
+          </ion-button>
+        </ion-item>
         </ng-container>
       </ion-col>
     </ion-row>

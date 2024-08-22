@@ -17,7 +17,7 @@
 </ion-breadcrumbs>
 
 <ion-content class="ion-padding">
-  <ion-list>
+  <ion-list *ngIf="pendingVolunteers.length > 0; else noPendingVolunteers">
     <ion-item-group *ngFor="let volunteer of pendingVolunteers | sort: 'name'">
       <ion-item lines="full">
         <ion-label>
@@ -26,6 +26,8 @@
           <p>Gender: {{ volunteer.gender }}</p>
           <p>Age: {{ volunteer.age }}</p>
           <p>Status: {{ volunteer.status }}</p>
+          <!-- Display Counselor Details if present -->
+          <p *ngIf="volunteer.counselorDetails">Counselor Details: {{ volunteer.counselorDetails }}</p>
         </ion-label>
         <ion-buttons slot="end">
           <ion-button color="success" (click)="approveVolunteer(volunteer.volunteerId!)">
@@ -38,4 +40,10 @@
       </ion-item>
     </ion-item-group>
   </ion-list>
+   <!-- No Pending Volunteers Message -->
+   <ng-template #noPendingVolunteers>
+    <ion-label class="ion-text-center">
+      <h2>No pending volunteers to approve</h2>
+    </ion-label>
+  </ng-template>
 </ion-content>

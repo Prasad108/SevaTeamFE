@@ -105,7 +105,8 @@
                   [(ngModel)]="newVolunteer.centerId"
                   name="centerId"
                   required
-                >
+                  (ionChange)="onCenterChange($event)"
+                > <!-- Listen for changes to the center selection -->
                   <ion-select-option *ngFor="let center of centers" [value]="center.centerId">
                     {{ center.name }} - {{ center.location }}
                   </ion-select-option>
@@ -114,6 +115,22 @@
               <ion-note *ngIf="volunteerForm.controls['centerId']?.touched && volunteerForm.controls['centerId']?.invalid" color="danger">
                 <small *ngIf="volunteerForm.controls['centerId']?.errors?.['required']">Center selection is required.</small>
               </ion-note>
+
+              <!-- Counselor Details Field (Visible only if 'Other' is selected) -->
+              <ion-item *ngIf="showCounselorDetails">
+                <ion-label position="floating">Your counselor's details</ion-label>
+                <div style="padding-top: 10px;"></div>
+                <ion-input
+                  [(ngModel)]="counselorDetails"
+                  name="counselorDetails"
+                  required
+                  #counselorDetailsInput="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-note *ngIf="volunteerForm.controls['counselorDetails']?.touched && volunteerForm.controls['counselorDetails']?.invalid" color="danger">
+                <small *ngIf="volunteerForm.controls['counselorDetails']?.errors?.['required']">Counselor's details are required.</small>
+              </ion-note>
+              
 
               <!-- Submit Button -->
               <ion-button

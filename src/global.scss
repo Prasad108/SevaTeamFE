@@ -59,3 +59,10 @@ ion-icon + span {
     background-color: #c0392b !important; /* Burgundy red background for delete button */
     color: black !important; /* White text for delete button */
   }
+
+  ion-padding, ion-card-content,ion-card-content ion-grid, ion-row, ion-col, inner-scroll, scroll-y {
+    @media (max-width: 767px) {
+      padding: 0 !important; /* Remove padding for screens smaller than 768px */
+    }
+  }
+  

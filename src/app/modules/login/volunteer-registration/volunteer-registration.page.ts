@@ -18,6 +18,8 @@ import { AnalyticsService } from 'src/app/services/analytics.service';
 export class VolunteerRegistrationPage implements OnInit {
   centers: Center[] = [];
   newVolunteer: Volunteer = this.resetVolunteer();
+  showCounselorDetails = false; // Flag to show/hide the counselor details field
+  counselorDetails: string = ''; // To store the counselor details when 'Other' is selected
   
   @ViewChild('volunteerForm', { static: true }) volunteerForm!: NgForm; // Access the form
 
@@ -37,7 +39,16 @@ export class VolunteerRegistrationPage implements OnInit {
   fetchCenters() {
     this.centerService.getCenters().subscribe(
       (centers) => {
-        this.centers = centers;
+        // Separate "Other" center, case insensitive
+        const otherCenters = centers.filter(center => center.name.toLowerCase() === 'other');
+        const normalCenters = centers.filter(center => center.name.toLowerCase() !== 'other');
+  
+        // Sort normal centers by name
+        normalCenters.sort((a, b) => a.name.localeCompare(b.name));
+  
+        // Combine the sorted centers and put "Other" at the end
+        this.centers = [...normalCenters, ...otherCenters];
+  
         this.analyticsService.logCustomEvent('centers_fetched', { centerCount: centers.length });
       },
       (error) => {
@@ -46,6 +57,12 @@ export class VolunteerRegistrationPage implements OnInit {
         this.showAlert('Error', 'Failed to load centers.');
       }
     );
+  }
+ 
+  onCenterChange(event: any) {
+    const selectedCenterId = event.detail.value;
+    const selectedCenter = this.centers.find(center => center.centerId === selectedCenterId);
+    this.showCounselorDetails = selectedCenter?.name.toLowerCase() === 'other';
   }
 
   resetVolunteer(): Volunteer {
@@ -62,16 +79,26 @@ export class VolunteerRegistrationPage implements OnInit {
   registerVolunteer() {
     if (!this.validateVolunteer(this.newVolunteer)) return;
   
+    // If the counselor details are filled, add them to the volunteer object
+    if (this.showCounselorDetails) {
+      this.newVolunteer.counselorDetails = this.counselorDetails;
+    } else {
+      delete this.newVolunteer.counselorDetails; // Ensure it doesn't get included if not needed
+    }
+  
     this.volunteerService.addVolunteer(this.newVolunteer).subscribe(() => {
       this.analyticsService.logCustomEvent('volunteer_registered', { volunteerName: this.newVolunteer.name });
       this.showAlert('Success', 'Your registration has been submitted. You will be notified once it is approved.', true);
       this.volunteerForm.resetForm(this.resetVolunteer()); // Reset the form and clear errors
+      this.showCounselorDetails = false; // Reset the counselor details visibility
+      this.counselorDetails = ''; // Reset the counselor details field
     }, (error: any) => {
       console.error('Error registering volunteer:', error);
       this.analyticsService.logCustomEvent('volunteer_registration_error', { error: error.message });
       this.showAlert('Error', 'Failed to register. Please try again.');
     });
   }
+  
 
   validateVolunteer(volunteer: Volunteer): boolean {
     if (!volunteer.name || !volunteer.phoneNumber || !volunteer.gender || volunteer.age <= 0 || !volunteer.centerId) {
@@ -79,6 +106,12 @@ export class VolunteerRegistrationPage implements OnInit {
       this.showAlert('Validation Error', 'All fields are required, and age must be greater than 0.');
       return false;
     }
+
+    if (this.showCounselorDetails && !this.counselorDetails) {
+      this.showAlert('Validation Error', 'Your counselor\'s details are required.');
+      return false;
+    }
+
     return true;
   }
 
