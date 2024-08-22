@@ -21,7 +21,7 @@
 <ion-content class="ion-padding">
   <ion-grid fixed>
     <ion-row>
-      <ion-col size="12" size-md="8" offset-md="2">
+      <ion-col size="12" >
         <ion-button expand="full" color="primary" (click)="openEventModal()">
           Add New Event
         </ion-button>
@@ -31,39 +31,19 @@
             <ion-item lines="none">
               <ion-grid>
                 <ion-row>
-                  <ion-col>
-                    <ion-button
-                      expand="full"
-                      fill="solid"
-                      color="primary"
-                      (click)="editEvent(event)"
-                    >
-                      Edit
-                    </ion-button>
+                  <ion-col size="4">
+                    <ion-button expand="full" fill="solid" color="primary" (click)="editEvent(event)">Edit</ion-button>
                   </ion-col>
-                  <ion-col>
-                    <ion-button
-                      expand="full"
-                      fill="solid"
-                      color="danger"
-                      (click)="deleteEvent(event.eventId!)"
-                    >
-                      Delete
-                    </ion-button>
+                  <ion-col size="4">
+                    <ion-button expand="full" fill="solid" color="danger" (click)="deleteEvent(event.eventId!)">Delete</ion-button>
                   </ion-col>
-                  <ion-col>
-                    <ion-button
-                      expand="full"
-                      fill="solid"
-                      color="tertiary"
-                      routerLink="{{ event.eventId }}/details"
-                    >
-                      Details
-                    </ion-button>
+                  <ion-col size="4">
+                    <ion-button expand="full" fill="solid" color="tertiary" routerLink="{{ event.eventId }}/details">Details</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-grid>
             </ion-item>
+            <ion-item-divider></ion-item-divider>
           </ion-item-group>
         </ion-list>
       </ion-col>
