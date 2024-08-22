@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { VolunteerService } from '../../../services/volunteer.service';
 import { Volunteer } from '../../../services/volunteer.service';
 import { AlertController } from '@ionic/angular';
-import { User } from 'firebase/auth';
-import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ConfirmationDialogService } from 'src/app/services/confirmation-dialog.service';
+import { AnalyticsService } from 'src/app/services/analytics.service'; // Import your AnalyticsService
 
 @Component({
   selector: 'app-volunteers',
@@ -24,24 +23,25 @@ export class VolunteersComponent implements OnInit {
   constructor(
     private volunteerService: VolunteerService,
     private alertController: AlertController,
-    private storageService : StorageService,
-    private confirmationDialogService: ConfirmationDialogService 
-
+    private storageService: StorageService,
+    private confirmationDialogService: ConfirmationDialogService,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {
+    this.analyticsService.logCustomEvent('volunteers_component_viewed');
+
     const pocDetails = this.storageService.getStoredPocDetails();
-      if (pocDetails) {
-        this.centerId = pocDetails.centerId; 
-        this.pocId = pocDetails.pocId ? pocDetails.pocId: null; 
-        this.fetchVolunteers();
-      }else{
-        console.log('current logged in user details not found')
-      }
+    if (pocDetails) {
+      this.centerId = pocDetails.centerId; 
+      this.pocId = pocDetails.pocId ? pocDetails.pocId : null; 
+      this.fetchVolunteers();
+    } else {
+      console.log('current logged in user details not found');
+    }
   }
 
   ionViewWillEnter() {
-    // Fetch fresh data every time the view is about to enter
     this.fetchVolunteers();
   }
 
@@ -62,6 +62,7 @@ export class VolunteersComponent implements OnInit {
     if (this.centerId) {
       this.volunteerService.getVolunteersByCenter(this.centerId).subscribe(volunteers => {
         this.volunteers = volunteers;
+        this.analyticsService.logCustomEvent('volunteers_fetched', { centerId: this.centerId }); // Log fetching volunteers
       });
     }
   }
@@ -70,6 +71,7 @@ export class VolunteersComponent implements OnInit {
     if (!this.validateVolunteer(this.newVolunteer)) return;
 
     this.volunteerService.addVolunteer(this.newVolunteer).subscribe(() => {
+      this.analyticsService.logCustomEvent('volunteer_added', { name: this.newVolunteer.name }); // Log volunteer added
       this.fetchVolunteers();
       this.closeVolunteerModal();
     });
@@ -80,6 +82,7 @@ export class VolunteersComponent implements OnInit {
     this.selectedVolunteerId = volunteer.volunteerId!;
     this.newVolunteer = { ...volunteer };
     this.showVolunteerModal = true;
+    this.analyticsService.logCustomEvent('volunteer_edit_initiated', { volunteerId: volunteer.volunteerId }); // Log edit initiated
   }
 
   updateVolunteer() {
@@ -88,6 +91,7 @@ export class VolunteersComponent implements OnInit {
     if (this.selectedVolunteerId) {
       const updatedVolunteer = { ...this.newVolunteer, volunteerId: this.selectedVolunteerId };
       this.volunteerService.updateVolunteer(updatedVolunteer).subscribe(() => {
+        this.analyticsService.logCustomEvent('volunteer_updated', { volunteerId: this.selectedVolunteerId }); // Log volunteer updated
         this.fetchVolunteers();
         this.cancelEdit();
       });
@@ -103,6 +107,7 @@ export class VolunteersComponent implements OnInit {
     if (confirmed) {
       this.volunteerService.deleteVolunteer(volunteerId)
         .then(() => {
+          this.analyticsService.logCustomEvent('volunteer_deleted', { volunteerId });
           this.fetchVolunteers(); // Refresh the list of volunteers
         })
         .catch(error => {
@@ -112,9 +117,8 @@ export class VolunteersComponent implements OnInit {
     }
   }
 
-  
-
   cancelEdit() {
+    this.analyticsService.logCustomEvent('edit_cancelled');
     this.editMode = false;
     this.selectedVolunteerId = null;
     this.newVolunteer = this.resetVolunteer();
@@ -140,11 +144,13 @@ export class VolunteersComponent implements OnInit {
   }
 
   openAddVolunteerModal() {
+    this.analyticsService.logCustomEvent('add_volunteer_modal_opened'); // Log opening of add volunteer modal
     this.newVolunteer = this.resetVolunteer(); // Reset volunteer form data
     this.showVolunteerModal = true;
   }
 
   closeVolunteerModal() {
+    this.analyticsService.logCustomEvent('volunteer_modal_closed'); // Log closing of volunteer modal
     this.showVolunteerModal = false;
   }
 }

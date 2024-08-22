@@ -1,21 +1,17 @@
 import { Analytics, getAnalytics, logEvent } from '@angular/fire/analytics';
 import { Injectable } from '@angular/core';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
-  analytics:Analytics;
+  private analytics: Analytics;
+
   constructor() {
-    const analytics = getAnalytics();
-    this.analytics = analytics;
+    this.analytics = getAnalytics(); // Initialize the analytics instance once
   }
+
   logCustomEvent(eventName: string, eventParams?: { [key: string]: any }) {
-    if (eventParams) {
-      logEvent(this.analytics, eventName, eventParams);
-    } else {
-      logEvent(this.analytics, eventName);
-    }
+    logEvent(this.analytics, eventName, eventParams || {});
   }
 }

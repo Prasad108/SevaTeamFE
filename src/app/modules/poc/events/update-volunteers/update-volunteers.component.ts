@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Center, CenterService } from 'src/app/services/center.service';
 import { POC, PocService } from 'src/app/services/poc.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { AnalyticsService } from 'src/app/services/analytics.service'; // Import your AnalyticsService
 
 @Component({
   selector: 'app-update-volunteers',
@@ -45,10 +46,13 @@ export class UpdateVolunteersComponent implements OnInit {
     private eventService: EventService,
     private route: ActivatedRoute,
     private centerService: CenterService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private analyticsService: AnalyticsService // Inject your AnalyticsService
   ) {}
 
   ngOnInit() {
+    this.analyticsService.logCustomEvent('update_volunteers_component_viewed'); // Log when component is initialized
+
     this.eventId = this.route.snapshot.paramMap.get('eventId');
     if (this.eventId) {
       this.fetchEventDetails(this.eventId);
@@ -59,6 +63,7 @@ export class UpdateVolunteersComponent implements OnInit {
     this.eventService.getEventById(eventId).subscribe(
       (event) => {
         this.selectedEvent = event;
+        this.analyticsService.logCustomEvent('event_details_fetched', { eventId }); // Log fetching event details
         this.checkRegistrationDates();
         if (!this.isRegistrationFuture) {
           this.initializeData();
@@ -66,6 +71,7 @@ export class UpdateVolunteersComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching event details:', error);
+        this.analyticsService.logCustomEvent('event_details_fetch_error', { eventId, error: error.message }); // Log error during fetch
       }
     );
   }
@@ -102,6 +108,7 @@ export class UpdateVolunteersComponent implements OnInit {
       this.volunteerService.getVolunteersByCenter(this.centerId!).subscribe(volunteers => {
         this.allVolunteersOfCenter = volunteers;
         this.updateVolunteerLists();
+        this.analyticsService.logCustomEvent('volunteers_fetched', { centerId: this.centerId, volunteerCount: volunteers.length }); // Log fetching volunteers
       });
     }
   }
@@ -110,6 +117,7 @@ export class UpdateVolunteersComponent implements OnInit {
     this.assignmentService.getAssignmentsForEventByCenter(centerId, eventId).subscribe(assignments => {
       this.assignedVolunteers = assignments;
       this.updateVolunteerLists();
+      this.analyticsService.logCustomEvent('assigned_volunteers_fetched', { centerId, eventId, assignmentCount: assignments.length }); // Log fetching assigned volunteers
     });
   }
 
@@ -177,6 +185,9 @@ export class UpdateVolunteersComponent implements OnInit {
             // Remove the added volunteer from the available volunteers list
             this.availableVolunteers = this.availableVolunteers.filter(v => v.volunteerId !== volunteer.volunteerId);
 
+            // Log volunteer assignment
+            this.analyticsService.logCustomEvent('volunteer_assigned', { volunteerId: volunteer.volunteerId, eventId: this.selectedEvent!.eventId });
+
             // Force change detection to update the UI
             this.cdr.detectChanges();
 
@@ -184,12 +195,11 @@ export class UpdateVolunteersComponent implements OnInit {
         },
         error => {
             loading.dismiss();
+            this.analyticsService.logCustomEvent('volunteer_assignment_error', { volunteerId: volunteer.volunteerId, eventId: this.selectedEvent!.eventId, error: error.message }); // Log error during assignment
             this.showAlert('Error', 'Failed to add volunteer to event.');
         }
     );
-}
-
-
+  }
 
   async removeVolunteerFromEvent(assignment: EventVolunteerAssignment) {
     if (this.isRegistrationClosed) return;
@@ -200,9 +210,14 @@ export class UpdateVolunteersComponent implements OnInit {
     this.assignmentService.deleteAssignment(assignment.id!).subscribe(() => {
       this.assignedVolunteers = this.assignedVolunteers.filter(av => av.id !== assignment.id);
       this.updateVolunteerLists(); // Update lists after removing
+
+      // Log volunteer removal
+      this.analyticsService.logCustomEvent('volunteer_removed', { volunteerId: assignment.volunteer.volunteerId, eventId: assignment.eventId });
+
       loading.dismiss();
     }, error => {
       loading.dismiss();
+      this.analyticsService.logCustomEvent('volunteer_removal_error', { volunteerId: assignment.volunteer.volunteerId, eventId: assignment.eventId, error: error.message }); // Log error during removal
       this.showAlert('Error', 'Failed to remove volunteer from event.');
     });
   }
@@ -210,11 +225,13 @@ export class UpdateVolunteersComponent implements OnInit {
   openEditAssignmentModal(assignment: EventVolunteerAssignment) {
     this.currentAssignment = { ...assignment };
     this.isEditModalOpen = true;
+    this.analyticsService.logCustomEvent('edit_assignment_modal_opened', { assignmentId: assignment.id }); // Log opening of edit assignment modal
   }
 
   closeEditAssignmentModal() {
     this.isEditModalOpen = false;
     this.currentAssignment = null;
+    this.analyticsService.logCustomEvent('edit_assignment_modal_closed'); // Log closing of edit assignment modal
   }
 
   async saveUpdatedAssignment() {
@@ -233,8 +250,12 @@ export class UpdateVolunteersComponent implements OnInit {
       if (index !== -1) {
         this.assignedVolunteers[index] = updatedAssignment;
       }
+
+      // Log successful assignment update
+      this.analyticsService.logCustomEvent('assignment_updated', { assignmentId: updatedAssignment.id });
     }, error => {
       loading.dismiss();
+      this.analyticsService.logCustomEvent('assignment_update_error', { assignmentId: this.currentAssignment!.id, error: error.message }); // Log error during update
       this.showAlert('Error', 'Failed to update volunteer assignment.');
     });
   }
@@ -250,5 +271,6 @@ export class UpdateVolunteersComponent implements OnInit {
 
   onSlotSelectionClose() {
     this.isSlotSelectionOpen = false;
+    this.analyticsService.logCustomEvent('slot_selection_closed'); // Log closing of slot selection
   }
 }
