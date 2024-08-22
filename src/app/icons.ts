@@ -34,6 +34,13 @@ import {
   personAdd,
   chevronBack,
   chevronForward,
+  call,
+  chatbox,
+  train,
+  checkmark,
+  maleFemale,
+  timeOutline,
+  time,
 } from 'ionicons/icons';
 
 export function registerIcons() {
@@ -67,6 +74,12 @@ export function registerIcons() {
     'log-in':logIn,
     'person-add': personAdd,
     'chevron-back':chevronBack,
-    'chevron-forward':chevronForward
+    'chevron-forward':chevronForward,
+    'call': call,
+    'chatbox': chatbox,
+    'train': train,
+    'checkmark':checkmark,
+    'male-female':maleFemale,
+    'clock':time
   });
 }

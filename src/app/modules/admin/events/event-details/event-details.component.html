@@ -145,68 +145,148 @@
 
 
 <!-- Volunteers Section with Pagination -->
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Registered Volunteers</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-list *ngIf="assignments.length > 0">
-      <ion-item *ngFor="let assignment of paginatedAssignments | sort: 'volunteer.name'">
-        <ion-label>
-          <h2>{{ assignment.volunteer.name }}</h2>
-          <p><strong>Phone:</strong> {{ assignment.volunteer.phoneNumber }}</p>
-          <p><strong>Gender:</strong> {{ assignment.volunteer.gender }}</p>
-          <p><strong>Age:</strong> {{ assignment.volunteer.age }}</p>
-          <p><strong>Center:</strong> {{ assignment.center.name }}</p>
-          <p><strong>Center Location:</strong> {{ assignment.center.location }}</p>
-          <p><strong>POC:</strong> {{ assignment.poc?.name }}</p>
-          <p><strong>POC Phone:</strong> {{ assignment.poc?.phoneNumber }}</p>
-          <p><strong>Admin Status:</strong> {{ assignment.adminApprovalStatus }}</p>
-          <p><strong>Admin Comment:</strong> {{ assignment.adminComment || 'No comments' }}</p>
-          <p><strong>Arrival Date:</strong> {{ assignment.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date) : 'Not provided' }}</p>
-          <p><strong>Train Number:</strong> {{ assignment.trainNumber || 'Not provided' }}</p>
-          <p><strong>POC Comment:</strong> {{ assignment.pocComment || 'No comments' }}</p>
-          <p><strong>Slots Selected:</strong> {{ assignment.slotsSelected.join(', ') }}</p>
-        </ion-label>
-        <ion-button slot="end" color="tertiary" (click)="openEditModal(assignment)">
-          Edit
-        </ion-button>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="filteredAssignments.length === 0">
-      <p>No volunteers registered for this event.</p>
-    </div>
+<ion-list>
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Registered Volunteers</ion-label>
+    </ion-item-divider>
+
+
+
+        <!-- assignment section -->
+        <ion-list *ngIf="assignments.length > 0">
+              <ion-card *ngFor="let assignment of paginatedAssignments | sort: 'volunteer.name'">
+                <ion-card-header>
+                  <ion-card-title> <strong>{{ assignment.volunteer.name }}</strong></ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+
+                  <ion-list lines="none">
+                    <ion-item>
+                      <ion-icon name="call" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Phone:</strong> {{ assignment.volunteer.phoneNumber }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="male-female" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Gender:</strong> {{ assignment.volunteer.gender }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="calendar" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Age:</strong> {{ assignment.volunteer.age }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="location" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Center:</strong> {{ assignment.center.name }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="location" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Center Location:</strong> {{ assignment.center.location }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="person" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>POC:</strong> {{ assignment.poc?.name }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="call" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>POC Phone:</strong> {{ assignment.poc?.phoneNumber }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="checkmark" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Admin Status:</strong> {{ assignment.adminApprovalStatus }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="chatbox" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Admin Comment:</strong> {{ assignment.adminComment || 'No comments' }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="calendar" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Arrival Date:</strong> {{ assignment.volunteerArrivalDate ? (assignment.volunteerArrivalDate | date) : 'Not provided' }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="train" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Train Number:</strong> {{ assignment.trainNumber || 'Not provided' }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="chatbox" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>POC Comment:</strong> {{ assignment.pocComment || 'No comments' }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-icon name="clock" slot="start"></ion-icon>
+                      <ion-label>
+                        <strong>Slots Selected:</strong> {{ assignment.slotsSelected.join(', ') }}
+                      </ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-button slot="end" color="tertiary" (click)="openEditModal(assignment)">
+                        Edit
+                      </ion-button>
+                    </ion-item>
+                  </ion-list>
+                </ion-card-content>
+              </ion-card>
+        </ion-list>
+
+
+        <div *ngIf="filteredAssignments.length === 0">
+          <p>No volunteers registered for this event.</p>
+        </div>
 
 <!-- Pagination Controls -->
-<ion-footer *ngIf="assignments.length > 0">
-  <ion-toolbar>
-    <ion-grid>
-      <ion-row>
-        <ion-col size-lg="4" size-sm="12" class="ion-text-left ion-justify-content-end">
-          <ion-buttons>
-            <ion-button (click)="prevPage()" [disabled]="currentPage === 1">
-              <ion-icon name="chevron-back" slot="start"></ion-icon>
-              Previous
-            </ion-button>
-          </ion-buttons>
-        </ion-col>
-        <ion-col size-lg="4" size-sm="12" class="ion-text-center">
-          <ion-title>
-            Page {{ currentPage }} of {{ totalPages }} | Total Records: {{ filteredAssignments.length }}
-          </ion-title>
-        </ion-col>
-        <ion-col size-lg="4" size-sm="12" class="ion-text-right">
-          <ion-buttons>
-            <ion-button (click)="nextPage()" [disabled]="currentPage >= totalPages">
-              Next
-              <ion-icon name="chevron-forward" slot="end"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-toolbar>
-</ion-footer>
-  </ion-card-content>
-</ion-card>
+        <ion-footer *ngIf="assignments.length > 0">
+          <ion-toolbar>
+            <ion-grid>
+              <ion-row>
+                <ion-col size-lg="4" size-sm="12" class="ion-text-left ion-justify-content-end">
+                  <ion-buttons>
+                    <ion-button (click)="prevPage()" [disabled]="currentPage === 1">
+                      <ion-icon name="chevron-back" slot="start"></ion-icon>
+                      Previous
+                    </ion-button>
+                  </ion-buttons>
+                </ion-col>
+                <ion-col size-lg="4" size-sm="12" class="ion-text-center">
+                  <ion-title>
+                    Page {{ currentPage }} of {{ totalPages }} | Total Records: {{ filteredAssignments.length }}
+                  </ion-title>
+                </ion-col>
+                <ion-col size-lg="4" size-sm="12" class="ion-text-right">
+                  <ion-buttons>
+                    <ion-button (click)="nextPage()" [disabled]="currentPage >= totalPages">
+                      Next
+                      <ion-icon name="chevron-forward" slot="end"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-toolbar>
+        </ion-footer>
+
+
+  </ion-item-group>
+</ion-list>
 </ion-content>
