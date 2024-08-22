@@ -6,6 +6,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Center, CenterService } from 'src/app/services/center.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-volunteer-registration',
@@ -24,10 +25,12 @@ export class VolunteerRegistrationPage implements OnInit {
     private volunteerService: VolunteerService,
     @Inject(AlertController) private alertController: AlertController, // Inject AlertController directly
     private centerService: CenterService,
-    private router: Router // Inject Router for navigation
+    private router: Router, // Inject Router for navigation
+    private analyticsService: AnalyticsService // Inject AnalyticsService
   ) {}
 
   ngOnInit() {
+    this.analyticsService.logCustomEvent('volunteer_registration_viewed');
     this.fetchCenters();
   }
 
@@ -35,9 +38,11 @@ export class VolunteerRegistrationPage implements OnInit {
     this.centerService.getCenters().subscribe(
       (centers) => {
         this.centers = centers;
+        this.analyticsService.logCustomEvent('centers_fetched', { centerCount: centers.length });
       },
       (error) => {
         console.error('Error fetching centers:', error);
+        this.analyticsService.logCustomEvent('centers_fetch_error', { error: error.message });
         this.showAlert('Error', 'Failed to load centers.');
       }
     );
@@ -58,16 +63,19 @@ export class VolunteerRegistrationPage implements OnInit {
     if (!this.validateVolunteer(this.newVolunteer)) return;
   
     this.volunteerService.addVolunteer(this.newVolunteer).subscribe(() => {
+      this.analyticsService.logCustomEvent('volunteer_registered', { volunteerName: this.newVolunteer.name });
       this.showAlert('Success', 'Your registration has been submitted. You will be notified once it is approved.', true);
       this.volunteerForm.resetForm(this.resetVolunteer()); // Reset the form and clear errors
     }, (error: any) => {
       console.error('Error registering volunteer:', error);
+      this.analyticsService.logCustomEvent('volunteer_registration_error', { error: error.message });
       this.showAlert('Error', 'Failed to register. Please try again.');
     });
   }
 
   validateVolunteer(volunteer: Volunteer): boolean {
     if (!volunteer.name || !volunteer.phoneNumber || !volunteer.gender || volunteer.age <= 0 || !volunteer.centerId) {
+      this.analyticsService.logCustomEvent('volunteer_registration_validation_error');
       this.showAlert('Validation Error', 'All fields are required, and age must be greater than 0.');
       return false;
     }
