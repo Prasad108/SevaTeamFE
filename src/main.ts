@@ -8,6 +8,7 @@ import { registerIcons } from './app/icons';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 registerIcons();
 
@@ -18,7 +19,9 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(IonicModule.forRoot({})),
-    ScreenTrackingService,   // Optional: For automatic screen tracking
-    UserTrackingService,     // Optional: For user interaction tracking
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+
+    ScreenTrackingService,
+    UserTrackingService,
   ],
 });
